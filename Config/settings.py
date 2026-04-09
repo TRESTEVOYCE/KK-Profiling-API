@@ -63,7 +63,7 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'Config.urls'
-
+CORS_ALLOW_ALL_ORIGINS = True
 AUTH_USER_MODEL = 'user_api.User' 
 
 TEMPLATES = [
