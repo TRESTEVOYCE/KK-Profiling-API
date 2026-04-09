@@ -1,4 +1,5 @@
-from rest_framework import APIView, request, status
+from rest_framework.views import APIView
+from rest_framework import status
 from .models import User
 from .serializers import UserSerializer
 from rest_framework.response import Response
