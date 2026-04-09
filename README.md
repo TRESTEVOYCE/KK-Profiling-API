@@ -1,144 +1,153 @@
-🚀 Overview
+# 📘 SK Information System – API
 
-The KK Profiling API is a RESTful backend built with Django and Django REST Framework (DRF) designed to manage user profiling information, authentication, and related records.
+## 📌 Overview
+The SK Information System API is the backend service that powers the SK (Sangguniang Kabataan) web application. It handles data processing, authentication, and communication between the frontend web app and the database.
 
-It provides endpoints for:
+This system is designed to efficiently manage SK-related data such as members, officers, announcements, and other organizational records.
 
-User authentication (JWT-based)
-Profiling information management
-CRUD operations for user-related data
-🛠️ Tech Stack
-Python 3.x
-Django
-Django REST Framework (DRF)
-SQLite (default, can be changed)
-JWT Authentication (djangorestframework-simplejwt)
-📦 Installation
-1. Clone the Repository
-git clone https://github.com/TRESTEVOYCE/KK-Profiling-API.git
-cd KK-Profiling-API
-2. Create Virtual Environment
-python -m venv venv
+---
 
-Activate it:
+## 🚀 Features
+- JWT Authentication (Login / Refresh Token)
+- User Management
+- Member Management
+- Officer Management
+- Announcements / Posts
+- RESTful API endpoints
+- CRUD Operations (Create, Read, Update, Delete)
+- Secure API access
 
-Windows:
-venv\Scripts\activate
-Mac/Linux:
-source venv/bin/activate
-3. Install Dependencies
-pip install -r requirements.txt
-⚙️ Configuration
-1. Apply Migrations
-python manage.py migrate
-2. Create Superuser (Optional)
-python manage.py createsuperuser
-3. Run Server
-python manage.py runserver
+---
 
-Server will run at:
+## 🛠️ Tech Stack
+- Backend Framework: Django
+- API Framework: Django REST Framework (DRF)
+- Authentication: Simple JWT
+- Database: SQLite (can be upgraded to PostgreSQL/MySQL)
+- Language: Python
+- Frontend (Connected App): HTML, CSS, JavaScript
 
-http://127.0.0.1:8000/
-🔐 Authentication
+---
 
-This API uses JWT (JSON Web Tokens).
+## 📂 Project Structure
+sk-information-system/
 
-Login Endpoint
-POST /api/login/
-Request Body
+├── api/                # Main API app  
+├── models/             # Database models  
+├── serializers/        # DRF serializers  
+├── views/              # API views / logic  
+├── urls/               # API routes  
+├── db.sqlite3          # Database  
+└── manage.py           # Django entry point  
+
+---
+
+## ⚙️ Installation & Setup
+
+1. Clone the repository
+git clone https://github.com/your-repo/sk-information-system.git  
+cd sk-information-system  
+
+2. Create virtual environment
+python -m venv venv  
+source venv/bin/activate   (Linux/Mac)  
+venv\Scripts\activate      (Windows)  
+
+3. Install dependencies
+pip install -r requirements.txt  
+
+4. Run migrations
+python manage.py makemigrations  
+python manage.py migrate  
+
+5. Run the server
+python manage.py runserver  
+
+---
+
+## 🔐 Authentication (JWT)
+
+This API uses JSON Web Tokens (JWT) for authentication.
+
+### Login (Get Token)
+POST /api/token/
+
+Request Body:
 {
   "username": "your_username",
   "password": "your_password"
 }
-Response
+
+Response:
 {
-  "refresh": "your_refresh_token",
-  "access": "your_access_token"
+  "access": "your_access_token",
+  "refresh": "your_refresh_token"
 }
-Using Token in Requests
 
-Add this header:
+---
 
-Authorization: Bearer <access_token>
-📌 API Endpoints
-🔑 Authentication
-Method	Endpoint	Description
-POST	/api/login/	User login
-POST	/api/refresh/	Refresh token
-👤 Profiling Information
-Method	Endpoint	Description
-GET	/api/profile/	Get all profiles
-POST	/api/profile/	Create profile
-GET	/api/profile/<id>/	Get specific profile
-PUT	/api/profile/<id>/	Update profile
-DELETE	/api/profile/<id>/	Delete profile
-🧪 Example (JavaScript Fetch)
-const login = async () => {
-  const response = await fetch("http://127.0.0.1:8000/api/login/", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      username: "admin",
-      password: "admin123"
-    })
-  });
+### Refresh Token
+POST /api/token/refresh/
 
-  const data = await response.json();
-  console.log(data);
+Request Body:
+{
+  "refresh": "your_refresh_token"
+}
 
-  localStorage.setItem("token", data.access);
-};
-📂 Project Structure
-KK-Profiling-API/
-│
-├── api/
-│   ├── models.py
-│   ├── serializers.py
-│   ├── views.py
-│   ├── urls.py
-│
-├── project/
-│   ├── settings.py
-│   ├── urls.py
-│
-├── manage.py
-└── requirements.txt
-⚠️ Common Issues
-❌ 404 on /api/login/
-Make sure the route is included in urls.py
-path('api/login/', LoginView.as_view())
-❌ CORS Error
+---
 
-Install:
+### Using the Token
 
-pip install django-cors-headers
+Include the access token in headers:
 
-Then add to settings.py:
+Authorization: Bearer your_access_token  
 
-CORS_ALLOW_ALL_ORIGINS = True
-🔄 Future Improvements
-Role-based access (Admin/User)
-Image upload for profiles
-Pagination & filtering
-Deployment (Render / Railway / VPS)
-🤝 Contributing
-Fork the repository
-Create a new branch
-Commit your changes
-Submit a pull request
-📜 License
+---
 
-This project is open-source and available under the MIT License.
+## 🔗 API Endpoints (Sample)
 
-👨‍💻 Author
+GET     /api/members/          - Get all members  
+POST    /api/members/          - Add new member  
+GET     /api/officers/         - Get officers  
+POST    /api/announcements/    - Create announcement  
+GET     /api/announcements/    - Get announcements  
 
-Developed by TRESTEVOYCE
+---
 
-💡 Notes for Future Users
-Always authenticate first before accessing protected endpoints
-Use tools like:
-Postman
-Thunder Client (VS Code)
-Frontend apps (React, HTML/JS)
+## 🌐 Integration with Frontend
+
+Example using JavaScript:
+
+fetch("http://127.0.0.1:8000/api/members/", {
+  method: "GET",
+  headers: {
+    "Authorization": "Bearer your_access_token",
+    "Content-Type": "application/json"
+  }
+})
+.then(response => response.json())
+.then(data => console.log(data));
+
+---
+
+## 📈 Future Improvements
+- Role-based access control (Admin, Officer, Member)
+- Dashboard analytics
+- Mobile app integration
+- Deployment (Cloud hosting)
+- Database optimization
+- WebApp Integration
+
+---
+
+## 👨‍💻 Developers
+- Mark Steven Camposano (BSIT – 3rd Year)
+- Ann Trecia Balendo (BSIT – 3rd Year)
+- Joyce Acerden (BSIT – 3rd Year)
+- Rainier Orogan (BSIT – 3rd Year)
+- Rochelle Florendo (BSIT – 3rd Year)
+
+---
+
+## 📄 License
+This project is for educational and organizational use.
