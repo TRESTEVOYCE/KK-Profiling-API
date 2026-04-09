@@ -1,4 +1,4 @@
-from rest_framework.views import APIView
+from rest_framework.views import APIView,generics
 from rest_framework import status
 from .models import User
 from .serializers import UserSerializer
@@ -39,3 +39,12 @@ class LogoutView(APIView):
             return Response(status=status.HTTP_205_RESET_CONTENT)
         except Exception as e:
             return Response(status=status.HTTP_400_BAD_REQUEST)
+        
+class UserListCreate(generics.ListCreateAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+
+class UserRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+
