@@ -10,6 +10,7 @@ class Member(models.Model):
 
     email = models.EmailField(blank=True, null=True)
     contact_number = models.CharField(max_length=20)
+    sk_picture = models.ImageField(upload_to='sk_pictures/', blank=True, null=True)
 
     date_added = models.DateTimeField(auto_now_add=True)
 

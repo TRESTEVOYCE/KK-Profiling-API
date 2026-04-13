@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     'user_api',
     'kkprofiling_api',
     'sk_members_api',
+    'events_api',
     'corsheaders',
 ]
 
@@ -45,7 +46,17 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.AllowAny',
     ),
-    
+     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 10,
+
+    'DEFAULT_THROTTLE_CLASSES': [
+        'rest_framework.throttling.AnonRateThrottle',
+        'rest_framework.throttling.UserRateThrottle'
+    ],
+    'DEFAULT_THROTTLE_RATES': {
+        'anon': '100/day',
+        'user': '1000/day'
+    } 
 }
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
@@ -65,8 +76,7 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'Config.urls'
-CORS_ALLOW_ALL_ORIGINS = True
-AUTH_USER_MODEL = 'user_api.User' 
+CORS_ALLOW_ALL_ORIGINS = True 
 
 TEMPLATES = [
     {
@@ -96,6 +106,7 @@ DATABASES = {
     }
 }
 
+ALLOWED_HOSTS = ['*']
 
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators

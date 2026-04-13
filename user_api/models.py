@@ -1,20 +1,19 @@
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import User
 from django.db import models
 
 # Create your models here.
 
-class User(AbstractUser):
+class Profile(models.Model):
+    ROLE_CHOICES = (
+        ('admin', 'Admin'),
+        ('staff', 'Staff'),
+        ('collector', 'Collector'),
+    )
 
-    class RoleChoices(models.TextChoices):
-        ADMIN = "admin", "Admin"
-        STAFF = "staff", "Staff"
-        COLLECTOR = "collector", "Collector"
-
-    email = models.EmailField(unique=True)
-    role = models.CharField(max_length=50, blank=True, null=True, choices=RoleChoices.choices)
-
-    USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username']
+    user = models.OneToOneField(User, on_delete=models.CASCADE,null=True, blank=True)
+    role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='collector')
 
     def __str__(self):
-        return self.email
+        return self.user.username
+
+

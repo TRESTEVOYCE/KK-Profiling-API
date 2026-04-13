@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIA SK-System API Tester</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-gray-100 min-h-screen p-4 font-mono">
+
+    <div class="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
+        
+        <div class="space-y-6">
+            <h1 class="text-2xl font-bold text-blue-400 border-b border-gray-700 pb-2">API Control Panel</h1>
+
+            <section class="bg-gray-800 p-4 rounded-lg border border-gray-700 shadow-xl">
+                <h2 class="text-lg font-semibold mb-3 text-green-400">1. Login (Get JWT)</h2>
+                <div class="space-y-2">
+                    <input id="login_user" type="text" placeholder="Username" class="w-full p-2 rounded bg-gray-700 border border-gray-600 focus:outline-none focus:border-blue-500">
+                    <input id="login_pass" type="password" placeholder="Password" class="w-full p-2 rounded bg-gray-700 border border-gray-600 focus:outline-none focus:border-blue-500">
+                    <button onclick="login()" class="w-full bg-blue-600 hover:bg-blue-500 p-2 rounded font-bold transition">LOGIN</button>
+                    <button onclick="logout()" class="w-full bg-red-600 hover:bg-red-500 p-2 rounded font-bold transition">LOGOUT</button>
+                </div>
+            </section>
+
+            <section class="bg-gray-800 p-4 rounded-lg border border-gray-700 shadow-xl">
+                <h2 class="text-lg font-semibold mb-3 text-purple-400">2. Create New Account (Admin Only)</h2>
+                <div class="space-y-2">
+                    <input id="reg_user" type="text" placeholder="New Username" class="w-full p-2 rounded bg-gray-700 border border-gray-600">
+                    <input id="reg_email" type="email" placeholder="New Email" class="w-full p-2 rounded bg-gray-700 border border-gray-600">
+                    <input id="reg_pass1" type="password" placeholder="Password" class="w-full p-2 rounded bg-gray-700 border border-gray-600">
+                    <input id="reg_pass2" type="password" placeholder="Confirm Password" class="w-full p-2 rounded bg-gray-700 border border-gray-600">
+                    <select id="reg_role" class="w-full p-2 rounded bg-gray-700 border border-gray-600">
+                        <option value="collector">Collector</option>
+                        <option value="staff">Staff</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                    <button onclick="createUser()" class="w-full bg-purple-600 hover:bg-purple-500 p-2 rounded font-bold transition">CREATE USER</button>
+                </div>
+            </section>
+
+            <section class="bg-gray-800 p-4 rounded-lg border border-gray-700 shadow-xl">
+                <h2 class="text-lg font-semibold mb-3 text-red-400">3. Delete Account</h2>
+                <div class="flex gap-2">
+                    <input id="delete_id" type="number" placeholder="User ID" class="w-2/3 p-2 rounded bg-gray-700 border border-gray-600">
+                    <button onclick="deleteUser()" class="w-1/3 bg-red-700 hover:bg-red-600 p-2 rounded font-bold transition">DELETE</button>
+                </div>
+            </section>
+        </div>
+
+        <div class="flex flex-col h-full">
+            <h2 class="text-2xl font-bold text-blue-400 mb-4">Server Response</h2>
+            <div id="status-badge" class="mb-2 text-xs font-bold px-2 py-1 rounded inline-block bg-gray-700">Status: Offline</div>
+            <pre id="output" class="flex-grow bg-black p-4 rounded-lg border border-gray-700 overflow-auto text-sm text-green-500 shadow-inner min-h-[500px]"></pre>
+            <button onclick="document.getElementById('output').textContent = ''" class="mt-2 text-xs text-gray-500 hover:text-gray-300">Clear Logs</button>
+        </div>
+    </div>
+
+    <script>
+        const BASE_URL = 'http://127.0.0.1:8000/api/';
+
+        function log(message, isError = false) {
+            const output = document.getElementById('output');
+            const time = new Date().toLocaleTimeString();
+            const color = isError ? 'text-red-400' : 'text-green-500';
+            output.innerHTML += `<span class="text-gray-500">[${time}]</span> <span class="${color}">${typeof message === 'object' ? JSON.stringify(message, null, 2) : message}</span>\n\n`;
+            output.scrollTop = output.scrollHeight;
+        }
+
+        function setStatus(status, colorClass) {
+            const badge = document.getElementById('status-badge');
+            badge.textContent = `Status: ${status}`;
+            badge.className = `mb-2 text-xs font-bold px-2 py-1 rounded inline-block ${colorClass}`;
+        }
+
+        // --- LOGIN ---
+        async function login() {
+            const username = document.getElementById('login_user').value;
+            const password = document.getElementById('login_pass').value;
+
+            try {
+                const res = await fetch(`${BASE_URL}login/`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+                const data = await res.json();
+
+                if (res.ok) {
+                    localStorage.setItem('access', data.access);
+                    localStorage.setItem('refresh', data.refresh);
+                    log("LOGIN SUCCESS! Token saved to LocalStorage.");
+                    log(data);
+                    setStatus("Logged In", "bg-green-900 text-green-200");
+                } else {
+                    log("LOGIN FAILED", true);
+                    log(data, true);
+                }
+            } catch (err) { log("Connection Error: " + err, true); }
+        }
+
+        // --- LOGOUT ---
+        async function logout() {
+            const refresh = localStorage.getItem('refresh');
+            try {
+                const res = await fetch(`${BASE_URL}logout/`, {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('access')}`
+                    },
+                    body: JSON.stringify({ refresh })
+                });
+                if (res.ok) {
+                    localStorage.clear();
+                    log("LOGOUT SUCCESS. Tokens cleared.");
+                    setStatus("Logged Out", "bg-gray-700 text-gray-200");
+                } else {
+                    log("LOGOUT FAILED (Tokens might be expired)", true);
+                }
+            } catch (err) { log(err, true); }
+        }
+
+        // --- CREATE USER ---
+        async function createUser() {
+            const payload = {
+                reg_username: document.getElementById('reg_user').value,
+                reg_email: document.getElementById('reg_email').value,
+                password1: document.getElementById('reg_pass1').value,
+                password2: document.getElementById('reg_pass2').value,
+                role: document.getElementById('reg_role').value
+            };
+
+            try {
+                const res = await fetch(`${BASE_URL}users/`, {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('access')}`
+                    },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                
+                if (res.ok) {
+                    log("USER CREATED SUCCESSFULLY");
+                    log(data);
+                } else {
+                    log("CREATE FAILED (Check if you are logged in as Admin)", true);
+                    log(data, true);
+                }
+            } catch (err) { log(err, true); }
+        }
+
+        // --- DELETE USER ---
+        async function deleteUser() {
+            const id = document.getElementById('delete_id').value;
+            if(!id) return log("Please provide a User ID", true);
+
+            try {
+                const res = await fetch(`${BASE_URL}users/${id}/`, {
+                    method: 'DELETE',
+                    headers: { 
+                        'Authorization': `Bearer ${localStorage.getItem('access')}`
+                    }
+                });
+
+                if (res.status === 204) {
+                    log(`USER ${id} DELETED SUCCESSFULLY`);
+                } else {
+                    const data = await res.json().catch(() => ({}));
+                    log(`DELETE FAILED (Status: ${res.status})`, true);
+                    log(data, true);
+                }
+            } catch (err) { log(err, true); }
+        }
+    </script>
+</body>
+</html>

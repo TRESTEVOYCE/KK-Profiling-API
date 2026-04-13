@@ -78,6 +78,7 @@ class KKAddress(models.Model):
     province = models.CharField(max_length=255)
     municipality_or_city = models.CharField(max_length=255)
     barangay = models.CharField(max_length=255)
+    purok = models.CharField(max_length=255, blank=True, null=True)
 
     date_added = models.DateTimeField(auto_now_add=True)
 
