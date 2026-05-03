@@ -1,6 +1,7 @@
 
 from pathlib import Path
 from datetime import timedelta
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -10,13 +11,20 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-msnl3pvn5fu)y5cbs9*+*3mz77af%akm$@xibl52^ansj0fijd'
-
+SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-msnl3pvn5fu)y5cbs9*+*3mz77af%akm$@xibl52^ansj0fijd')  
 # SECURITY WARNING: don't run with debug turned on in production!
+
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '').split(',') if os.getenv('ALLOWED_HOSTS') else []
+AXES_FAILURE_LIMIT = 5
+AXES_COOLOFF_TIME = timedelta(minutes=5)
+AXES_LOCKOUT_PARAMETERS = ['username']
 
+AUTHENTICATION_BACKENDS = [
+    'axes.backends.AxesBackend',
+    'django.contrib.auth.backends.ModelBackend',
+]
 
 # Application definition
 
@@ -36,7 +44,31 @@ INSTALLED_APPS = [
     'sk_members_api',
     'events_api',
     'corsheaders',
+    'axes',
 ]
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+
+    'handlers': {
+        'file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, 'activity.log'),
+        },
+    },
+
+    'loggers': {
+        'goals': {
+            'handlers': ['file'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+    },
+}
+
+
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -73,6 +105,8 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
+    'axes.middleware.AxesMiddleware',
+
 ]
 
 ROOT_URLCONF = 'Config.urls'
