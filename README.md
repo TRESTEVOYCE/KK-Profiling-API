@@ -124,37 +124,42 @@ POST /api/logout/       → Logout
 GET  /api/users/        → List users
 POST /api/users/        → Create user
 DELETE /api/users/<id>/ → Delete user
-🧑 Members
-GET    /api/members/        → Get all members
-POST   /api/members/        → Add member
-GET    /api/members/<id>/   → Get member
-PUT    /api/members/<id>/   → Update member
-DELETE /api/members/<id>/   → Delete member
-📋 Profiling Information
-GET    /api/profiling-informations/
-POST   /api/profiling-informations/
-GET    /api/profiling-informations/<id>/
-PUT    /api/profiling-informations/<id>/
-DELETE /api/profiling-informations/<id>/
-🏠 KK Address
-GET    /api/kk-address/
-POST   /api/kk-address/
-GET    /api/kk-address/<id>/
-PUT    /api/kk-address/<id>/
-DELETE /api/kk-address/<id>/
-📊 Youth Status
-GET    /api/youth-status/
-POST   /api/youth-status/
-GET    /api/youth-status/<id>/
-PUT    /api/youth-status/<id>/
-DELETE /api/youth-status/<id>/
-📅 Events
-GET    /api/events/
-POST   /api/events/
-GET    /api/events/<id>/
-PUT    /api/events/<id>/
-DELETE /api/events/<id>/
-🌐 Frontend Integration Example
+## 🧑 Members
+- GET    /api/members/        → Get all members
+- POST   /api/members/        → Add member
+- GET    /api/members/<id>/   → Get member
+- PUT    /api/members/<id>/   → Update member
+- DELETE /api/members/<id>/   → Delete member
+## 📋 Profiling Information
+- GET    /api/profiling-informations/
+- POST   /api/profiling-informations/
+- GET    /api/profiling-informations/<id>/
+- PUT    /api/profiling-informations/<id>/
+- DELETE /api/profiling-informations/<id>/
+
+## 🏠 KK Address
+- GET    /api/kk-address/
+- POST   /api/kk-address/
+- GET    /api/kk-address/<id>/
+- PUT    /api/kk-address/<id>/
+- DELETE /api/kk-address/<id>/
+
+# 📊 Youth Status
+- GET    /api/youth-status/
+- POST   /api/youth-status/
+- GET    /api/youth-status/<id>/
+- PUT    /api/youth-status/<id>/
+- DELETE /api/youth-status/<id>/
+
+## 📅 Events
+- GET    /api/events/
+- POST   /api/events/
+- GET    /api/events/<id>/
+- PUT    /api/events/<id>/
+- DELETE /api/events/<id>/
+
+---
+## 🌐 Frontend Integration Example
 fetch("http://127.0.0.1:8000/api/members/", {
   method: "GET",
   headers: {
@@ -164,13 +169,15 @@ fetch("http://127.0.0.1:8000/api/members/", {
 })
 .then(response => response.json())
 .then(data => console.log(data));
-📈 Future Improvements
-Role-based access control (Admin, Officer, Member)
-Dashboard analytics
-Mobile app integration
-Cloud deployment
-Database optimization
-Full web app integration
+
+---
+
+## 📈 Future Improvements
+- Role-based access control (Admin, Officer, Member)
+- Dashboard analytics
+- Mobile app integration
+- Database optimization
+- Full web app integration
 ---
 
 ## 👨‍💻 Developers
@@ -181,6 +188,6 @@ Full web app integration
 - Rochelle Florendo (BSIT – 3rd Year)
 
 ---
-📄 License
+# 📄 License
 
 This project is for educational and organizational use.
