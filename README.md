@@ -33,15 +33,18 @@ This system is designed to efficiently manage SK-related data such as members, o
 ---
 
 ## 📂 Project Structure
-sk-information-system/
 
-├── api/                # Main API app  
-├── models/             # Database models  
-├── serializers/        # DRF serializers  
-├── views/              # API views / logic  
-├── urls/               # API routes  
-├── db.sqlite3          # Database  
-└── manage.py           # Django entry point  
+
+sk-information-system/
+│
+├── api/ # Main API app
+├── models/ # Database models
+├── serializers/ # DRF serializers
+├── views/ # API views / logic
+├── urls/ # API routes
+├── db.sqlite3 # Database
+└── manage.py # Django entry point
+
 
 ---
 
@@ -168,12 +171,16 @@ Mobile app integration
 Cloud deployment
 Database optimization
 Full web app integration
-👨‍💻 Developers
-Mark Steven Camposano (BSIT – 3rd Year)
-Ann Trecia Balendo (BSIT – 3rd Year)
-Joyce Acerden (BSIT – 3rd Year)
-Rainier Orogan (BSIT – 3rd Year)
-Rochelle Florendo (BSIT – 3rd Year)
+---
+
+## 👨‍💻 Developers
+- Mark Steven Camposano (BSIT – 3rd Year)
+- Ann Trecia Balendo (BSIT – 3rd Year)
+- Joyce Acerden (BSIT – 3rd Year)
+- Rainier Orogan (BSIT – 3rd Year)
+- Rochelle Florendo (BSIT – 3rd Year)
+
+---
 📄 License
 
 This project is for educational and organizational use.
