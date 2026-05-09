@@ -33,18 +33,15 @@ This system is designed to efficiently manage SK-related data such as members, o
 ---
 
 ## 📂 Project Structure
-
-
 sk-information-system/
-│
-├── api/ # Main API app
-├── models/ # Database models
-├── serializers/ # DRF serializers
-├── views/ # API views / logic
-├── urls/ # API routes
-├── db.sqlite3 # Database
-└── manage.py # Django entry point
 
+├── api/                # Main API app  
+├── models/             # Database models  
+├── serializers/        # DRF serializers  
+├── views/              # API views / logic  
+├── urls/               # API routes  
+├── db.sqlite3          # Database  
+└── manage.py           # Django entry point  
 
 ---
 
