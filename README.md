@@ -18,7 +18,7 @@ This system is designed to efficiently manage SK-related data such as members, o
 
 ## 🛠️ Tech Stack
 - **Backend:** Django & Django REST Framework (DRF)
-- **Language:** Python 3.x
+- **Language:** Python 3.14
 - **Auth:** Simple JWT
 - **Database:** SQLite (Default) / PostgreSQL compatible
 - **Frontend Compatibility:** HTML, CSS, JavaScript (Fetch API/Axios)
