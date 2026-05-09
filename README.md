@@ -394,4 +394,4 @@ fetch("http://127.0.0.1:8000/api/members/", {
 ---
 
 ## 📄 License
-This project is for educational and organizational use under the ** Our Supervision **.
+This project is for educational and organizational use under the **Our Supervision**.
