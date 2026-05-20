@@ -1,7 +1,8 @@
 from django.urls import path, include
-from .views import KKAddressViewSet, ProfilingInformationsViewSet, ProfilingInformationsDetailViewSet, YouthStatusViewSet, YouthStatusDetailViewSet, KKAddressDetailViewSet
+from .views import KKAddressViewSet, ProfilingInformationsViewSet, ProfilingInformationsDetailViewSet, YouthStatusViewSet, YouthStatusDetailViewSet, KKAddressDetailViewSet, YouthSyncView
 
 urlpatterns = [
+    path('youth/sync/', YouthSyncView.as_view(), name='youth-sync'),
     path('profiling-informations/', ProfilingInformationsViewSet.as_view(), name='profiling-informations-list-create'),
     path('profiling-informations/<int:pk>/', ProfilingInformationsDetailViewSet.as_view(), name='profiling-informations-retrieve-update-destroy'),
     path('kk-address/', KKAddressViewSet.as_view(), name='kk-address-list-create'),

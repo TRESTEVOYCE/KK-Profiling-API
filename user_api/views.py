@@ -18,20 +18,18 @@ class LoginView(APIView):
         password = request.data.get('password')
 
         # Authenticate against the built-in Django User
-        user = authenticate(username=username, password=password)
+        user = authenticate(request=request, username=username, password=password)
         ip = request.META.get('REMOTE_ADDR')
 
         if user is not None:
-            # Get the Profile associated with this User
-            profile = Profile.objects.filter(user=user).first()
+            # Get or create the Profile associated with this User
+            profile, created = Profile.objects.get_or_create(user=user, defaults={'role': 'collector'})
             refresh = RefreshToken.for_user(user)
 
             logger.info(f"LOGIN SUCCESS | User: {user.username} | ID: {user.id} | IP: {ip}")
+            if created:
+                logger.info(f"LOGIN PROFILE CREATED | User: {user.username} | ID: {user.id} | IP: {ip}")
 
-            if not profile:
-                logger.warning(f"LOGIN WARNING | No profile found for user: {user.username} | ID: {user.id} | IP: {ip}")
-                return Response({'error': 'Profile not found'}, status=status.HTTP_404_NOT_FOUND)
-            
             return Response({
                 'refresh': str(refresh),
                 'access': str(refresh.access_token),
