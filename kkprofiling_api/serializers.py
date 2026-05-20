@@ -6,21 +6,33 @@ from .models import ProfilingInformations, KKAddress, YouthStatus
 class KKAddressSerializer(serializers.ModelSerializer):
     class Meta:
         model = KKAddress
-        fields = ['id', 'region', 'province', 'municipality_or_city', 'barangay', 'purok', 'date_added']
+        fields = ['region', 'province', 'municipality_or_city', 'barangay', 'purok']
+        read_only_fields = ['id', 'date_added']  # Guard against missing timestamps from mobile
+
 
 class YouthStatusSerializer(serializers.ModelSerializer):
     class Meta:
         model = YouthStatus
         fields = [
-            'id', 'youth_classification', 'youth_age_group', 'youth_with_specific_needs',
+            'youth_classification', 'youth_age_group', 'youth_with_specific_needs',
             'working_status', 'is_sk_voter', 'is_regular_voter', 
-            'attended_kk_assembly', 'times_attended', 'did_not_attend_reason', 'date_added'
+            'attended_kk_assembly', 'times_attended', 'did_not_attend_reason'
         ]
+        read_only_fields = ['id', 'date_added']  # Guard against missing timestamps from mobile
+
+    def to_internal_value(self, data):
+        # Create a mutable copy of the incoming query parameters dict
+        data = data.copy() if hasattr(data, 'copy') else dict(data)
+        
+        # Intercept and scrub boolean "False", false, or empty string indicators
+        specific_needs = data.get('youth_with_specific_needs')
+        if specific_needs in [False, 'False', 'false', 'N/A', '']:
+            data['youth_with_specific_needs'] = None
+            
+        return super().to_internal_value(data)
+        
 
 class ProfilingInformationsSerializer(serializers.ModelSerializer):
-    """
-    Standard CRUD Serializer used by your existing ProfilingInformations ViewSets.
-    """
     class Meta:
         model = ProfilingInformations
         fields = [
@@ -32,60 +44,48 @@ class ProfilingInformationsSerializer(serializers.ModelSerializer):
 # --- SPECIALIZED BULK NESTED SYNC SERIALIZER ---
 
 class YouthSyncSerializer(serializers.ModelSerializer):
-    # Keep your existing nested address and status serializers active here:
-    address = KKAddressSerializer()
-    youth_status = YouthStatusSerializer()
+    # Match these names exactly with what your Flutter JSON payload sends!
+    address = KKAddressSerializer(source='addresses')
+    youth_status = YouthStatusSerializer(source='youth_statuses')
 
     class Meta:
         model = ProfilingInformations
-        fields = '__all__'
-    
+        fields = [
+            'first_name', 'middle_name', 'last_name', 'age', 'birthdate', 
+            'email', 'contact_number', 'sex', 'civil_status', 
+            'educational_background', 'address', 'youth_status'
+        ]
+
     def create(self, validated_data):
-        # 1. Pop the nested dictionary structures out before creating the parent
-        address_data = validated_data.pop('address', None)
-        youth_status_data = validated_data.pop('youth_status', None)
+        # 1. FIX: Pop using the 'source' strings, NOT the field names!
+        address_data = validated_data.pop('addresses', None)
+        youth_status_data = validated_data.pop('youth_statuses', None)
 
-        # 2. Get the actual Model classes linked to those nested fields
-        # (This automatically reads the models from KKAddressSerializer and YouthStatusSerializer)
-        AddressModel = self.fields['address'].Meta.model
-        YouthStatusModel = self.fields['youth_status'].Meta.model
+        # 2. Save the parent Profile into db.sqlite3 safely
+        profile = ProfilingInformations.objects.create(**validated_data)
 
-        # 3. Create the child instances in SQLite first
-        address_instance = None
+        # 3. Create the Address row linked back to our fresh parent profile ID
         if address_data:
-            address_instance = AddressModel.objects.create(**address_data)
+            KKAddress.objects.create(kk_name=profile, **address_data)
 
-        youth_status_instance = None
+        # 4. Create the Youth Status row linked back to our fresh parent profile ID
         if youth_status_data:
-            youth_status_instance = YouthStatusModel.objects.create(**youth_status_data)
+            YouthStatus.objects.create(kk_name=profile, **youth_status_data)
 
-        # 4. Attach the saved child instances back into the main payload as foreign keys
-        # ⚠️ NOTE: Make sure 'address' and 'youth_status' match your database column names!
-        if address_instance:
-            validated_data['address'] = address_instance
-        if youth_status_instance:
-            validated_data['youth_status'] = youth_status_instance
-
-        # 5. Save the primary profile records cleanly
-        return ProfilingInformations.objects.create(**validated_data)
+        return profile
 
     def to_internal_value(self, data):
-        data = data.copy()
+        # ... Your excellent data scrubbing logic remains completely unchanged here!
+        if hasattr(data, 'dict'):
+            data = data.dict()
+        else:
+            data = dict(data)
 
-        # 1. Demographic Choices Mapping
-        gender_map = {
-            'Male': 'male',
-            'Female': 'female'
-        }
+        gender_map = {'Male': 'male', 'Female': 'female'}
         civil_status_map = {
-            'Single': 'single', 
-            'Married': 'married', 
-            'Widowed': 'widowed', 
-            'Separated': 'separated',
-            'Divorced': 'divorced',
-            'Annulled': 'annulled',
-            'Live-in': 'live_in',
-            'Unknown': 'unknown'
+            'Single': 'single', 'Married': 'married', 'Widowed': 'widowed', 
+            'Separated': 'separated', 'Divorced': 'divorced', 'Annulled': 'annulled',
+            'Live-in': 'live_in', 'Unknown': 'unknown'
         }
         education_map = {
             'Elementary Undergraduate': 'elementary_level',
@@ -93,7 +93,7 @@ class YouthSyncSerializer(serializers.ModelSerializer):
             'High School Undergraduate': 'highschool_level',
             'High School Graduate': 'highschool_graduate',
             'Vocational Graduate': 'vocational_graduate',
-            'College Undergraduate': 'college_level',       # Maps 'College Undergraduate' -> 'college_level'
+            'College Undergraduate': 'college_level',
             'College Graduate': 'college_graduate',
             'Master Level': 'master_level',
             'Doctorate Level': 'doctorate_level',
@@ -107,9 +107,8 @@ class YouthSyncSerializer(serializers.ModelSerializer):
         if data.get('educational_background') in education_map:
             data['educational_background'] = education_map[data['educational_background']]
 
-        # 2. Deep Nested Youth Status Choices Mapping
         if 'youth_status' in data and isinstance(data['youth_status'], dict):
-            status_data = data['youth_status'].copy()
+            status_data = dict(data['youth_status'])
             
             classification_map = {
                 'In-School Youth': 'in_school_youth', 
@@ -122,10 +121,8 @@ class YouthSyncSerializer(serializers.ModelSerializer):
                 'Adult Youth (25-30)': 'young_adult'
             }
             working_status_map = {
-                'Employed': 'employed', 
-                'Unemployed': 'unemployed', 
-                'Self-Employed': 'self_employed',
-                'Looking for Job': 'looking_for_job',
+                'Employed': 'employed', 'Unemployed': 'unemployed', 
+                'Self-Employed': 'self_employed', 'Looking for Job': 'looking_for_job',
                 'Not Looking for Job': 'not_looking_for_job'
             }
 
@@ -136,6 +133,11 @@ class YouthSyncSerializer(serializers.ModelSerializer):
             if status_data.get('working_status') in working_status_map:
                 status_data['working_status'] = working_status_map[status_data['working_status']]
                 
+            if status_data.get('youth_with_specific_needs') == '':
+                status_data['youth_with_specific_needs'] = None
+            if status_data.get('did_not_attend_reason') == '':
+                status_data['did_not_attend_reason'] = None
+
             data['youth_status'] = status_data
 
         return super().to_internal_value(data)

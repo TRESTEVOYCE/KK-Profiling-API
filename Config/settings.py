@@ -1,32 +1,27 @@
-
 from pathlib import Path
 from datetime import timedelta
 import os
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# =========================
+# CORE SETTINGS
+# =========================
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-msnl3pvn5fu)y5cbs9*+*3mz77af%akm$@xibl52^ansj0fijd')  
-# SECURITY WARNING: don't run with debug turned on in production!
+SECRET_KEY = os.getenv(
+    'SECRET_KEY',
+    'django-insecure-msnl3pvn5fu)y5cbs9*+*3mz77af%akm$@xibl52^ansj0fijd'
+)
 
 DEBUG = os.getenv('DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '').split(',') if os.getenv('ALLOWED_HOSTS') else []
-AXES_FAILURE_LIMIT = 5
-AXES_COOLOFF_TIME = timedelta(minutes=5)
-AXES_LOCKOUT_PARAMETERS = ['username', 'ip_address']
+# IMPORTANT: allow mobile + local network access
+ALLOWED_HOSTS = ['*']
 
-AUTHENTICATION_BACKENDS = [
-    'axes.backends.AxesBackend',
-    'django.contrib.auth.backends.ModelBackend',
-]
 
-# Application definition
+# =========================
+# APPLICATIONS
+# =========================
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -35,83 +30,138 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    # REST
     'rest_framework',
     'rest_framework_simplejwt',
     'rest_framework.authtoken',
     'rest_framework_simplejwt.token_blacklist',
+
+    # CORS
+    'corsheaders',
+
+    # your apps
     'user_api',
     'kkprofiling_api',
     'sk_members_api',
     'events_api',
-    'corsheaders',
-    'axes',
+
+    # security
+    # 'axes',
 ]
 
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
 
-    'handlers': {
-        'file': {
-            'level': 'INFO',
-            'class': 'logging.FileHandler',
-            'filename': os.path.join(BASE_DIR, 'activity.log'),
-        },
-    },
+# =========================
+# MIDDLEWARE
+# =========================
 
-    'loggers': {
-        'goals': {
-            'handlers': ['file'],
-            'level': 'INFO',
-            'propagate': True,
-        },
-    },
+MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
+
+    'django.middleware.security.SecurityMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.common.CommonMiddleware',
+
+    # KEEP CSRF but DO NOT rely on SessionAuth for API
+    'django.middleware.csrf.CsrfViewMiddleware',
+
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+    # 'axes.middleware.AxesMiddleware',
+]
+
+
+# =========================
+# URL / WSGI
+# =========================
+
+ROOT_URLCONF = 'Config.urls'
+WSGI_APPLICATION = 'Config.wsgi.application'
+
+
+# =========================
+# DATABASE
+# =========================
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
 }
 
 
+# =========================
+# REST FRAMEWORK (IMPORTANT FIX)
+# =========================
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-        'rest_framework.authentication.SessionAuthentication',
     ),
+
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.AllowAny',
     ),
-     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
     'PAGE_SIZE': 10,
 
     'DEFAULT_THROTTLE_CLASSES': [
         'rest_framework.throttling.AnonRateThrottle',
-        'rest_framework.throttling.UserRateThrottle'
+        'rest_framework.throttling.UserRateThrottle',
     ],
     'DEFAULT_THROTTLE_RATES': {
         'anon': '100/day',
-        'user': '1000/day'
-    } 
+        'user': '1000/day',
+    },
 }
+
+
+# =========================
+# SIMPLE JWT
+# =========================
+
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
 
-MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',
-    'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'axes.middleware.AxesMiddleware',
 
+# =========================
+# CORS (IMPORTANT FOR MOBILE + LOCAL API)
+# =========================
+
+CORS_ALLOW_ALL_ORIGINS = True
+
+CORS_ALLOW_CREDENTIALS = True
+
+
+# =========================
+# AUTH BACKENDS
+# =========================
+
+AUTHENTICATION_BACKENDS = [
+    # 'axes.backends.AxesBackend',
+    'django.contrib.auth.backends.ModelBackend',
 ]
 
-ROOT_URLCONF = 'Config.urls'
-CORS_ALLOW_ALL_ORIGINS = False
-CORS_ALLOW_CREDENTIALS = True
+
+# =========================
+# SECURITY (AXES)
+# =========================
+
+AXES_FAILURE_LIMIT = 5
+AXES_COOLOFF_TIME = timedelta(minutes=5)
+AXES_LOCKOUT_PARAMETERS = ['username', 'ip_address']
+
+
+# =========================
+# TEMPLATES
+# =========================
 
 TEMPLATES = [
     {
@@ -128,58 +178,43 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'Config.wsgi.application'
 
-
-# Database
-# https://docs.djangoproject.com/en/6.0/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
-
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '*']
-
-# Password validation
-# https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
-
-AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
-]
-
-
-# Internationalization
-# https://docs.djangoproject.com/en/6.0/topics/i18n/
+# =========================
+# INTERNATIONALIZATION
+# =========================
 
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'UTC'
-
 USE_I18N = True
-
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/6.0/howto/static-files/
+# =========================
+# STATIC FILES
+# =========================
 
 STATIC_URL = 'static/'
 
-CORS_ALLOWED_ORIGINS = [
-       "http://127.0.0.1:5500",
-       "http://localhost:5500",
-   ]
+
+# =========================
+# LOGGING
+# =========================
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, 'activity.log'),
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+    },
+}
