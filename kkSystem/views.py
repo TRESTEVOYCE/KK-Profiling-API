@@ -132,7 +132,7 @@ def create_youth_profile_view(request):
             status = status_form.save(commit=False)
             status.save()
             messages.success(request, "Youth registration profile successfully documented.")
-            return redirect('profile_dashboard')
+            return redirect('youth-profiles')
     else:
         info_form = ProfilingInformationsForm()
         address_form = KKAddressForm()

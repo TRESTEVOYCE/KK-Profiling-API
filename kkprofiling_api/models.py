@@ -71,7 +71,9 @@ class KKAddress(models.Model):
     kk_name = models.OneToOneField(
         ProfilingInformations,
         on_delete=models.CASCADE,
-        related_name='addresses'
+        related_name='addresses',
+        null=True,
+        blank=True
     )
 
     region = models.CharField(max_length=255)
@@ -110,7 +112,7 @@ class YouthStatus(models.Model):
         LOOKING_FOR_JOB = "looking_for_job", "Currently Looking for a Job"
         NOT_LOOKING_FOR_JOB = "not_looking_for_job", "Not Interested in Looking for a Job"
 
-    kk_name = models.OneToOneField(ProfilingInformations,on_delete=models.CASCADE,related_name='youth_statuses')
+    kk_name = models.OneToOneField(ProfilingInformations,on_delete=models.CASCADE,related_name='youth_statuses' ,null=True,blank=True)
 
     youth_classification = models.CharField(max_length=50,choices=YouthClassificationChoices.choices,blank=True,null=True)
 
