@@ -1,0 +1,247 @@
+{% extends 'pages/base.html' %}
+{% load static %}
+{% block title %}KK System - Home{% endblock %}
+
+{% block content %}
+<div class="space-y-8 animate-fade-in">
+    
+    <!-- Hero Dashboard Welcome Banner -->
+    <div class="relative overflow-hidden rounded-3xl bg-slate-700 shadow-lg border border-slate-600">
+        <div class="absolute inset-0 bg-cover bg-center bg-no-repeat bg-blend-multiply bg-indigo-650/80 transition-transform duration-700 hover:scale-105" style="background-image: url('{% static 'images/people.webp' %}');"></div>
+        <div class="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-900/80 to-indigo-900/40 z-0"></div>
+        <div class="absolute -right-12 -top-12 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl"></div>
+        
+        <div class="relative z-10 p-6 sm:p-10 max-w-2xl flex flex-col justify-center min-h-[180px]">
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 w-fit mb-3 backdrop-blur-xs">
+                <span class="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse"></span> Management Panel Active
+            </span>
+            <h2 class="text-2xl sm:text-3xl font-black text-white tracking-tight leading-none drop-shadow-xs">Welcome to KK Profiling!</h2>
+            <p class="text-slate-300 text-sm sm:text-base mt-2.5 leading-relaxed font-medium drop-shadow-xs">
+                Manage local youth data efficiently, review real-time demographic analytics modules, and systematically organize platform records.
+            </p>
+        </div>
+    </div>
+
+    <!-- Subsection Meta Header Line -->
+    <div class="border-b border-slate-200/80 pb-2">
+        <h3 class="text-lg font-bold text-slate-900 tracking-tight">Youth Profiling Statistics & Analytics</h3>
+        <p class="text-xs text-slate-500 mt-0.5">Real-time breakdown of community youth registry metrics</p>
+    </div>
+
+    <!-- Numeric Metric Stats Cards Grid Layout -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <!-- Total Registered Youth -->
+        <div class="bg-white border border-slate-200 p-5 rounded-2xl shadow-xs flex flex-col justify-between hover:border-slate-300 transition-all duration-150 group">
+            <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Total Registered Youth</p>
+            <div class="flex items-baseline justify-between mt-4">
+                <span class="text-3xl font-black text-slate-900 tracking-tight">{{ stats.total|default:0 }}</span>
+                <div class="w-10 h-10 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600 transition-transform group-hover:scale-105">
+                    <i class="fa-solid fa-user-group text-sm"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- In School Youth -->
+        <div class="bg-white border border-slate-200 p-5 rounded-2xl shadow-xs flex flex-col justify-between hover:border-slate-300 transition-all duration-150 group">
+            <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">In School Youth (ISY)</p>
+            <div class="flex items-baseline justify-between mt-4">
+                <span class="text-3xl font-black text-slate-900 tracking-tight">{{ stats.isy|default:0 }}</span>
+                <div class="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600 transition-transform group-hover:scale-105">
+                    <i class="fa-solid fa-graduation-cap text-sm"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Working Youth -->
+        <div class="bg-white border border-slate-200 p-5 rounded-2xl shadow-xs flex flex-col justify-between hover:border-slate-300 transition-all duration-150 group">
+            <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Working Youth</p>
+            <div class="flex items-baseline justify-between mt-4">
+                <span class="text-3xl font-black text-slate-900 tracking-tight">{{ stats.working|default:0 }}</span>
+                <div class="w-10 h-10 rounded-xl bg-purple-50 border border-purple-100 flex items-center justify-center text-purple-600 transition-transform group-hover:scale-105">
+                    <i class="fa-solid fa-briefcase text-sm"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Out of School Youth -->
+        <div class="bg-white border border-slate-200 p-5 rounded-2xl shadow-xs flex flex-col justify-between hover:border-slate-300 transition-all duration-150 group">
+            <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Out of School Youth (OSY)</p>
+            <div class="flex items-baseline justify-between mt-4">
+                <span class="text-3xl font-black text-slate-900 tracking-tight">{{ stats.osy|default:0 }}</span>
+                <div class="w-10 h-10 rounded-xl bg-rose-50 border border-rose-100 flex items-center justify-center text-rose-600 transition-transform group-hover:scale-105">
+                    <i class="fa-solid fa-person-walking-luggage text-sm"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section Row 1: Graphic Charts Grid Layout -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Age Distribution Box -->
+        <div class="bg-white border border-slate-200 p-5 rounded-2xl shadow-xs flex flex-col">
+            <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4 border-b border-slate-100 pb-2">Age Distribution</h4>
+            <div class="relative flex-1 min-h-[260px] flex items-center justify-center bg-slate-50/50 rounded-xl border border-dashed border-slate-200 p-2">
+                <canvas id="ageChart" class="w-full h-full"></canvas>
+            </div>
+        </div>
+
+        <!-- Status Distribution Box -->
+        <div class="bg-white border border-slate-200 p-5 rounded-2xl shadow-xs flex flex-col">
+            <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4 border-b border-slate-100 pb-2">Status Distribution</h4>
+            <div class="relative flex-1 min-h-[260px] flex items-center justify-center bg-slate-50/50 rounded-xl border border-dashed border-slate-200 p-2">
+                <canvas id="statusChart" class="w-full h-full"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section Row 2: Secondary Visual Charts & Strategic Metric Insights -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Gender Distribution Card -->
+        <div class="bg-white border border-slate-200 p-5 rounded-2xl shadow-xs flex flex-col lg:col-span-1">
+            <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4 border-b border-slate-100 pb-2">Gender Distribution</h4>
+            <div class="relative flex-1 min-h-[240px] flex items-center justify-center bg-slate-50/50 rounded-xl border border-dashed border-slate-200 p-2">
+                <canvas id="genderChart" class="w-full h-full"></canvas>
+            </div>
+        </div>
+
+        <!-- Strategic Analytics Key Insight Rows Box -->
+        <div class="bg-white border border-slate-200 p-5 rounded-2xl shadow-xs lg:col-span-2 flex flex-col">
+            <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4 border-b border-slate-100 pb-2">Key Insights</h4>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 flex-1">
+                <!-- Student Majority -->
+                <div class="flex items-start gap-3.5 p-4 bg-slate-50/60 border border-slate-100 rounded-xl hover:bg-slate-50 transition-colors">
+                    <div class="flex-shrink-0 w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center border border-emerald-100 mt-0.5">
+                        <i class="fa-solid fa-chart-line text-xs"></i>
+                    </div>
+                    <div>
+                        <strong class="text-sm font-bold text-slate-900 block">Student Majority</strong>
+                        <p class="text-xs text-slate-500 mt-1 leading-relaxed">
+                            <span class="font-bold text-indigo-600">{{ student_pct }}%</span> of registered youth are actively pursuing their education.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Employment Status -->
+                <div class="flex items-start gap-3.5 p-4 bg-slate-50/60 border border-slate-100 rounded-xl hover:bg-slate-50 transition-colors">
+                    <div class="flex-shrink-0 w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center border border-indigo-100 mt-0.5">
+                        <i class="fa-solid fa-hand-holding-heart text-xs"></i>
+                    </div>
+                    <div>
+                        <strong class="text-sm font-bold text-slate-900 block">Employment Status</strong>
+                        <p class="text-xs text-slate-500 mt-1 leading-relaxed">
+                            <span class="font-bold text-indigo-600">{{ working_pct }}%</span> of total youth require localized technical skill or livelihood programs.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Out of School Youth -->
+                <div class="flex items-start gap-3.5 p-4 bg-slate-50/60 border border-slate-100 rounded-xl hover:bg-slate-50 transition-colors">
+                    <div class="flex-shrink-0 w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center border border-indigo-100 mt-0.5">
+                        <i class="fa-solid fa-user-minus text-xs"></i>
+                    </div>
+                    <div>
+                        <strong class="text-sm font-bold text-slate-900 block">Out of School Youth</strong>
+                        <p class="text-xs text-slate-500 mt-1 leading-relaxed">
+                            <span class="font-bold text-indigo-600">{{ osy_pct }}%</span> are currently enrolled in alternative learning support networks.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Peak Age Demographic -->
+                <div class="flex items-start gap-3.5 p-4 bg-slate-50/60 border border-slate-100 rounded-xl hover:bg-slate-50 transition-colors">
+                    <div class="flex-shrink-0 w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center border border-emerald-100 mt-0.5">
+                        <i class="fa-solid fa-users-rectangle text-xs"></i>
+                    </div>
+                    <div>
+                        <strong class="text-sm font-bold text-slate-900 block">Peak Age Demographic</strong>
+                        <p class="text-xs text-slate-500 mt-1 leading-relaxed">
+                            Most registered community members fall into the <span class="font-bold text-slate-800">{{ peak_age_bracket }}</span> age bracket.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Load Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const globalChartOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: true,
+                    position: 'bottom',
+                    labels: { boxWidth: 12, padding: 15, font: { weight: '600', size: 11 } }
+                }
+            }
+        };
+
+        // 1. Age Distribution Chart
+        new Chart(document.getElementById('ageChart'), {
+            type: 'bar',
+            data: {
+                labels: ['15-18 yrs', '19-24 yrs', '25-30 yrs'],
+                datasets: [{
+                    label: 'Youth Counts',
+                    data: [
+                        {{ stats.age_15_18|default:0 }}, 
+                        {{ stats.age_19_24|default:0 }}, 
+                        {{ stats.age_25_30|default:0 }}
+                    ],
+                    backgroundColor: ['rgba(99, 102, 241, 0.85)', 'rgba(168, 85, 247, 0.85)', 'rgba(16, 185, 129, 0.85)'],
+                    borderRadius: 8
+                }]
+            },
+            options: {
+                ...globalChartOptions,
+                scales: {
+                    y: { beginAtZero: true, grid: { borderDash: [4, 4] } },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+
+        // 2. Status Distribution Chart
+        new Chart(document.getElementById('statusChart'), {
+            type: 'doughnut',
+            data: {
+                labels: ['In School (ISY)', 'Working Youth', 'Out of School (OSY)'],
+                datasets: [{
+                    data: [
+                        {{ stats.isy|default:0 }}, 
+                        {{ stats.working|default:0 }}, 
+                        {{ stats.osy|default:0 }}
+                    ],
+                    backgroundColor: ['#10b981', '#a855f7', '#f43f5e'],
+                    borderWidth: 2,
+                    hoverOffset: 4
+                }]
+            },
+            options: globalChartOptions
+        });
+
+        // 3. Gender Distribution Chart
+        new Chart(document.getElementById('genderChart'), {
+            type: 'pie',
+            data: {
+                labels: ['Male', 'Female'],
+                datasets: [{
+                    data: [
+                        {{ stats.male|default:0 }}, 
+                        {{ stats.female|default:0 }}
+                    ],
+                    backgroundColor: ['#3b82f6', '#ec4899'],
+                    borderWidth: 2
+                }]
+            },
+            options: globalChartOptions
+        });
+    });
+</script>
+{% endblock %}

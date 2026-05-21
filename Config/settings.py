@@ -20,6 +20,9 @@ ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '').split(',') if os.getenv('ALLOWED_
 AXES_FAILURE_LIMIT = 5
 AXES_COOLOFF_TIME = timedelta(minutes=5)
 AXES_LOCKOUT_PARAMETERS = ['username']
+AXES_ONLY_ADMIN_SITE = True
+
+
 
 AUTHENTICATION_BACKENDS = [
     'axes.backends.AxesBackend',
@@ -45,6 +48,7 @@ INSTALLED_APPS = [
     'events_api',
     'corsheaders',
     'axes',
+    'kkSystem',
 ]
 
 LOGGING = {
@@ -115,7 +119,7 @@ CORS_ALLOW_ALL_ORIGINS = True
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -177,3 +181,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+TEMPLATES_DIR = BASE_DIR / 'templates'
+
+

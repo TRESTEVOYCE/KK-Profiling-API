@@ -1,0 +1,137 @@
+{% extends 'pages/base.html' %}
+{% block title %}Update {{ position_label }}{% endblock %}
+{% block content %}
+
+<div class="min-h-screen bg-slate-50/50 py-12 px-4 sm:px-6 lg:px-8 flex items-center justify-center">
+    <div class="max-w-2xl w-full bg-white rounded-2xl border border-slate-100 shadow-xl shadow-slate-200/50 overflow-hidden">
+        
+        <!-- Header Banner Layout -->
+        <div class="bg-gradient-to-r from-indigo-600 to-violet-600 p-6 sm:p-8 text-white relative">
+            <div class="relative z-10">
+                <span class="inline-block px-3 py-1 bg-white/20 backdrop-blur-md text-[10px] font-extrabold uppercase tracking-widest rounded-full mb-3">
+                    Administrative Panel
+                </span>
+                <h2 class="text-xl sm:text-2xl font-bold tracking-tight">Assign Position Holder</h2>
+                <p class="text-indigo-100 text-sm mt-1">Updating record details for the official seat of <span class="font-semibold underline underline-offset-4">{{ position_label }}</span>.</p>
+            </div>
+            <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-white/10 rounded-full blur-2xl"></div>
+        </div>
+
+        <!-- Form Interface Body -->
+        <form method="POST" enctype="multipart/form-data" class="p-6 sm:p-8 space-y-6">
+            {% csrf_token %}
+
+            <!-- Form Global Top-level Error handling -->
+            {% if form.non_field_errors %}
+                <div class="p-4 bg-rose-50 border border-rose-100 text-rose-700 text-sm rounded-xl">
+                    {{ form.non_field_errors.0 }}
+                </div>
+            {% endif %}
+
+            <!-- 1. Profile Picture Upload Layout Block -->
+            <div class="bg-slate-50 border border-slate-100 rounded-xl p-4 flex flex-col sm:flex-row items-center gap-5">
+                <div class="w-20 h-20 rounded-xl bg-slate-200 border border-slate-300 overflow-hidden shrink-0 shadow-inner flex items-center justify-center text-slate-400">
+                    {% if member.sk_picture %}
+                        <img src="{{ member.sk_picture.url }}" class="w-full h-full object-cover" alt="Current Photo">
+                    {% else %}
+                        <i class="fa-solid fa-user text-3xl"></i>
+                    {% endif %}
+                </div>
+                <div class="flex-1 w-full space-y-1">
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider">Official Identification Image</label>
+                    <input type="file" name="sk_picture" id="id_sk_picture" accept="image/*"
+                           class="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer">
+                    {% if form.sk_picture.errors %}
+                        <p class="text-xs font-medium text-rose-500 mt-1">{{ form.sk_picture.errors.0 }}</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- 2. Full Name 3-Column Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <!-- First Name -->
+                <div class="space-y-1.5">
+                    <label for="id_first_name" class="block text-xs font-bold text-slate-600 uppercase tracking-wider">First Name</label>
+                    <input type="text" name="first_name" id="id_first_name" maxlength="50" required
+                           value="{{ form.first_name.value|default_if_none:'' }}"
+                           class="w-full px-4 py-2.5 rounded-xl border {% if form.first_name.errors %}border-rose-400 focus:ring-rose-500/20{% else %}border-slate-200 focus:border-indigo-500 focus:ring-indigo-500/20{% endif %} focus:ring-2 bg-slate-50/50 transition-all outline-none text-slate-800 text-sm">
+                    {% if form.first_name.errors %}<p class="text-xs text-rose-500 mt-0.5">{{ form.first_name.errors.0 }}</p>{% endif %}
+                </div>
+                
+                <!-- Middle Name -->
+                <div class="space-y-1.5">
+                    <label for="id_middle_name" class="block text-xs font-bold text-slate-600 uppercase tracking-wider">Middle Name <span class="text-slate-400 font-normal">(Opt)</span></label>
+                    <input type="text" name="middle_name" id="id_middle_name" maxlength="50"
+                           value="{{ form.middle_name.value|default_if_none:'' }}"
+                           class="w-full px-4 py-2.5 rounded-xl border {% if form.middle_name.errors %}border-rose-400 focus:ring-rose-500/20{% else %}border-slate-200 focus:border-indigo-500 focus:ring-indigo-500/20{% endif %} focus:ring-2 bg-slate-50/50 transition-all outline-none text-slate-800 text-sm">
+                    {% if form.middle_name.errors %}<p class="text-xs text-rose-500 mt-0.5">{{ form.middle_name.errors.0 }}</p>{% endif %}
+                </div>
+
+                <!-- Last Name -->
+                <div class="space-y-1.5">
+                    <label for="id_last_name" class="block text-xs font-bold text-slate-600 uppercase tracking-wider">Last Name</label>
+                    <input type="text" name="last_name" id="id_last_name" maxlength="50" required
+                           value="{{ form.last_name.value|default_if_none:'' }}"
+                           class="w-full px-4 py-2.5 rounded-xl border {% if form.last_name.errors %}border-rose-400 focus:ring-rose-500/20{% else %}border-slate-200 focus:border-indigo-500 focus:ring-indigo-500/20{% endif %} focus:ring-2 bg-slate-50/50 transition-all outline-none text-slate-800 text-sm">
+                    {% if form.last_name.errors %}<p class="text-xs text-rose-500 mt-0.5">{{ form.last_name.errors.0 }}</p>{% endif %}
+                </div>
+            </div>
+
+            <!-- 3. Demographics 2-Column Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <!-- Age -->
+                <div class="space-y-1.5">
+                    <label for="id_age" class="block text-xs font-bold text-slate-600 uppercase tracking-wider">Age</label>
+                    <input type="number" name="age" id="id_age" min="0"
+                           value="{{ form.age.value|default_if_none:'0' }}"
+                           class="w-full px-4 py-2.5 rounded-xl border {% if form.age.errors %}border-rose-400 focus:ring-rose-500/20{% else %}border-slate-200 focus:border-indigo-500 focus:ring-indigo-500/20{% endif %} focus:ring-2 bg-slate-50/50 transition-all outline-none text-slate-800 text-sm">
+                    {% if form.age.errors %}<p class="text-xs text-rose-500 mt-0.5">{{ form.age.errors.0 }}</p>{% endif %}
+                </div>
+
+                <!-- Birthdate -->
+                <div class="space-y-1.5">
+                    <label for="id_birthdate" class="block text-xs font-bold text-slate-600 uppercase tracking-wider">Birthdate</label>
+                    <!-- Formatting the date component safely into YYYY-MM-DD for standard HTML calendar elements -->
+                    <input type="date" name="birthdate" id="id_birthdate"
+                           value="{{ form.birthdate.value|date:'Y-m-d'|default:'' }}"
+                           class="w-full px-4 py-2.5 rounded-xl border {% if form.birthdate.errors %}border-rose-400 focus:ring-rose-500/20{% else %}border-slate-200 focus:border-indigo-500 focus:ring-indigo-500/20{% endif %} focus:ring-2 bg-slate-50/50 transition-all outline-none text-slate-800 text-sm">
+                    {% if form.birthdate.errors %}<p class="text-xs text-rose-500 mt-0.5">{{ form.birthdate.errors.0 }}</p>{% endif %}
+                </div>
+            </div>
+
+            <!-- 4. Contact Communications 2-Column Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <!-- Email Address -->
+                <div class="space-y-1.5">
+                    <label for="id_email" class="block text-xs font-bold text-slate-600 uppercase tracking-wider">Email Address</label>
+                    <input type="email" name="email" id="id_email"
+                           value="{{ form.email.value|default_if_none:'' }}"
+                           class="w-full px-4 py-2.5 rounded-xl border {% if form.email.errors %}border-rose-400 focus:ring-rose-500/20{% else %}border-slate-200 focus:border-indigo-500 focus:ring-indigo-500/20{% endif %} focus:ring-2 bg-slate-50/50 transition-all outline-none text-slate-800 text-sm">
+                    {% if form.email.errors %}<p class="text-xs text-rose-500 mt-0.5">{{ form.email.errors.0 }}</p>{% endif %}
+                </div>
+
+                <!-- Contact Number -->
+                <div class="space-y-1.5">
+                    <label for="id_contact_number" class="block text-xs font-bold text-slate-600 uppercase tracking-wider">Contact Number</label>
+                    <input type="text" name="contact_number" id="id_contact_number" maxlength="20" required
+                           value="{{ form.contact_number.value|default_if_none:'' }}"
+                           class="w-full px-4 py-2.5 rounded-xl border {% if form.contact_number.errors %}border-rose-400 focus:ring-rose-500/20{% else %}border-slate-200 focus:border-indigo-500 focus:ring-indigo-500/20{% endif %} focus:ring-2 bg-slate-50/50 transition-all outline-none text-slate-800 text-sm">
+                    {% if form.contact_number.errors %}<p class="text-xs text-rose-500 mt-0.5">{{ form.contact_number.errors.0 }}</p>{% endif %}
+                </div>
+            </div>
+
+            <!-- Action Controls Buttons Row -->
+            <div class="pt-4 border-t border-slate-100 flex items-center justify-end gap-3.5">
+                <a href="{% url 'organization' %}" class="px-5 py-2.5 text-sm font-semibold text-slate-600 hover:text-slate-800 transition-colors">
+                    Back to Chart
+                </a>
+                <button type="submit" class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-xl shadow-lg shadow-indigo-600/10 transition-all active:scale-98 cursor-pointer">
+                    Save Position Profile
+                </button>
+            </div>
+        </form>
+
+    </div>
+</div>
+
+{% endblock %}

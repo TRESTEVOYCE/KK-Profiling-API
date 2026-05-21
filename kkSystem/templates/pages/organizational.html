@@ -1,0 +1,241 @@
+{% extends 'pages/base.html' %}
+{% load static %}
+{% block title %}Organization Chart{% endblock %}
+{% block content %}
+
+    <!-- Organizational chart Container -->
+    <div id="organization-view" class="flex-1 p-4 sm:p-6 md:p-8 max-w-7xl mx-auto w-full box-border">
+        
+        <!-- Header Summary Block -->
+        <div class="mb-10 text-center sm:text-left">
+            <h2 class="text-2xl font-bold text-slate-800 tracking-tight flex items-center justify-center sm:justify-start gap-2.5">
+                <i class="fa-solid fa-sitemap text-indigo-500 text-xl"></i> SK Organization Council
+            </h2>
+            <p class="text-sm text-slate-500 mt-1">Select any leadership position below to update profile details, upload photos, or change administration records.</p>
+        </div>
+
+        <!-- Responsive Layout Engine Container -->
+        <div class="w-full overflow-x-auto pb-6">
+            
+            <!-- Desktop Hierarchy Tree (Hidden on mobile, displayed on MD screens up) -->
+            <div class="hidden md:flex flex-col items-center justify-center min-w-[900px] space-y-12 relative">
+                
+                <!-- Tier 1: Apex Leader (Chairperson) -->
+                <div class="relative flex flex-col items-center">
+                    <a href="{% url 'update_position_view' role='chairperson' %}" class="w-72 bg-white border-2 border-indigo-500 rounded-2xl p-4 shadow-md shadow-indigo-500/5 group relative transition-all duration-200 hover:-translate-y-1 hover:shadow-lg hover:border-indigo-600 block decoration-none">
+                        <div class="flex items-center gap-4">
+                            <div class="relative w-16 h-16 rounded-xl overflow-hidden bg-slate-100 border border-slate-200 shrink-0 shadow-inner flex items-center justify-center text-slate-400">
+                                {% if council.SK_Chairperson.sk_picture %}
+                                    <img src="{{ council.SK_Chairperson.sk_picture.url }}" alt="Chairperson" class="w-full h-full object-cover">
+                                {% else %}
+                                    <i class="fa-solid fa-user text-xl"></i>
+                                {% endif %}
+                                <div class="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white text-xs transition-opacity duration-150">
+                                    <i class="fa-solid fa-pen-to-square text-sm"></i>
+                                </div>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <h3 class="font-bold text-slate-800 text-sm truncate group-hover:text-indigo-600 transition-colors">
+                                    {{ council.SK_Chairperson|default:"Vacant Seat" }}
+                                </h3>
+                                <span class="block text-[10px] font-extrabold text-indigo-600 uppercase tracking-widest mt-1">SK Chairperson</span>
+                            </div>
+                        </div>
+                    </a>
+                    <div class="absolute bottom-0 top-full w-0.5 h-12 bg-slate-200"></div>
+                </div>
+
+                <!-- Tier 2: Core Officers (Secretary & Treasurer) -->
+                <div class="relative w-full max-w-4xl flex justify-center gap-32 pt-2">
+                    <div class="absolute top-0 left-1/4 right-1/4 h-0.5 bg-slate-200"></div>
+                    <div class="absolute -top-12 left-1/2 -translate-x-1/2 w-0.5 h-12 bg-slate-200"></div>
+
+                    <!-- Secretary Card -->
+                    <div class="relative flex flex-col items-center">
+                        <div class="absolute -top-2 left-1/2 -translate-x-1/2 w-0.5 h-2 bg-slate-200"></div>
+                        <a href="{% url 'update_position_view' role='secretary' %}" class="w-64 bg-white border border-slate-200 rounded-xl p-4 shadow-sm group transition-all duration-200 hover:-translate-y-1 hover:shadow-md hover:border-slate-300 block decoration-none">
+                            <div class="flex items-center gap-3">
+                                <div class="relative w-12 h-12 rounded-lg overflow-hidden bg-slate-100 border border-slate-200 shrink-0 flex items-center justify-center text-slate-400">
+                                    {% if council.SK_Secretary.sk_picture %}
+                                        <img src="{{ council.SK_Secretary.sk_picture.url }}" alt="Secretary" class="w-full h-full object-cover">
+                                    {% else %}
+                                        <i class="fa-solid fa-user text-base"></i>
+                                    {% endif %}
+                                    <div class="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white text-xs transition-opacity duration-150">
+                                        <i class="fa-solid fa-pen-to-square"></i>
+                                    </div>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <h3 class="font-semibold text-slate-800 text-xs truncate group-hover:text-indigo-600 transition-colors">
+                                        {{ council.SK_Secretary|default:"Vacant" }}
+                                    </h3>
+                                    <span class="block text-[9px] font-bold text-slate-400 uppercase tracking-wider mt-0.5">SK Secretary</span>
+                                </div>
+                            </div>
+                        </a>
+                        <div class="w-0.5 h-12 bg-slate-200"></div>
+                    </div>
+
+                    <!-- Treasurer Card -->
+                    <div class="relative flex flex-col items-center">
+                        <div class="absolute -top-2 left-1/2 -translate-x-1/2 w-0.5 h-2 bg-slate-200"></div>
+                        <a href="{% url 'update_position_view' role='treasurer' %}" class="w-64 bg-white border border-slate-200 rounded-xl p-4 shadow-sm group transition-all duration-200 hover:-translate-y-1 hover:shadow-md hover:border-slate-300 block decoration-none">
+                            <div class="flex items-center gap-3">
+                                <div class="relative w-12 h-12 rounded-lg overflow-hidden bg-slate-100 border border-slate-200 shrink-0 flex items-center justify-center text-slate-400">
+                                    {% if council.SK_Treasurer.sk_picture %}
+                                        <img src="{{ council.SK_Treasurer.sk_picture.url }}" alt="Treasurer" class="w-full h-full object-cover">
+                                    {% else %}
+                                        <i class="fa-solid fa-user text-base"></i>
+                                    {% endif %}
+                                    <div class="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white text-xs transition-opacity duration-150">
+                                        <i class="fa-solid fa-pen-to-square"></i>
+                                    </div>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <h3 class="font-semibold text-slate-800 text-xs truncate group-hover:text-indigo-600 transition-colors">
+                                        {{ council.SK_Treasurer|default:"Vacant" }}
+                                    </h3>
+                                    <span class="block text-[9px] font-bold text-slate-400 uppercase tracking-wider mt-0.5">SK Treasurer</span>
+                                </div>
+                            </div>
+                        </a>
+                        <div class="w-0.5 h-12 bg-slate-200"></div>
+                    </div>
+                </div>
+
+                <!-- Tier 3: Council Division Header Anchor -->
+                <div class="relative w-full flex flex-col items-center pt-2">
+                    <div class="absolute top-0 left-[36.5%] right-[36.5%] h-0.5 bg-slate-200"></div>
+                    <div class="w-40 bg-slate-100 border border-slate-200 rounded-lg py-1.5 text-center shadow-xs">
+                        <span class="text-[10px] font-extrabold text-slate-500 uppercase tracking-widest">SK Council Members</span>
+                    </div>
+                    <div class="w-0.5 h-10 bg-slate-200"></div>
+                </div>
+
+                <!-- Tier 4: The Board Members Row Matrix -->
+                <div class="w-full pt-2">
+                    <div class="grid grid-cols-7 gap-4 max-w-7xl mx-auto">
+                        <!-- Dynamic loop matching choices 1 through 7 -->
+                        {% for i in "1234567" %}
+                            <a href="{% url 'update_position_view' role='kagawad-'|add:i %}" class="bg-white border border-slate-200 rounded-xl p-3 shadow-xs group text-center transition-all duration-200 hover:border-slate-300 hover:shadow-md hover:-translate-y-1 block decoration-none">
+                                <div class="relative w-14 h-14 rounded-full overflow-hidden bg-slate-50 border border-slate-200 mx-auto mb-3.5 flex items-center justify-center text-slate-400">
+                                    
+                                    <!-- Safely lookup dictionary key via built-in system -->
+                                    {% if i == "1" and council.SK_Councilor_1.sk_picture %}<img src="{{ council.SK_Councilor_1.sk_picture.url }}" class="w-full h-full object-cover" alt="Photo">
+                                    {% elif i == "2" and council.SK_Councilor_2.sk_picture %}<img src="{{ council.SK_Councilor_2.sk_picture.url }}" class="w-full h-full object-cover" alt="Photo">
+                                    {% elif i == "3" and council.SK_Councilor_3.sk_picture %}<img src="{{ council.SK_Councilor_3.sk_picture.url }}" class="w-full h-full object-cover" alt="Photo">
+                                    {% elif i == "4" and council.SK_Councilor_4.sk_picture %}<img src="{{ council.SK_Councilor_4.sk_picture.url }}" class="w-full h-full object-cover" alt="Photo">
+                                    {% elif i == "5" and council.SK_Councilor_5.sk_picture %}<img src="{{ council.SK_Councilor_5.sk_picture.url }}" class="w-full h-full object-cover" alt="Photo">
+                                    {% elif i == "6" and council.SK_Councilor_6.sk_picture %}<img src="{{ council.SK_Councilor_6.sk_picture.url }}" class="w-full h-full object-cover" alt="Photo">
+                                    {% elif i == "7" and council.SK_Councilor_7.sk_picture %}<img src="{{ council.SK_Councilor_7.sk_picture.url }}" class="w-full h-full object-cover" alt="Photo">
+                                    {% else %}<i class="fa-solid fa-user text-sm"></i>{% endif %}
+                                    
+                                    <div class="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white text-[10px] transition-opacity duration-150">
+                                        <i class="fa-solid fa-pen"></i>
+                                    </div>
+                                </div>
+                                
+                                <h4 class="font-bold text-slate-700 text-xs truncate group-hover:text-indigo-600 transition-colors">
+                                    {% if i == "1" %}{{ council.SK_Councilor_1|default:"Vacant" }}
+                                    {% elif i == "2" %}{{ council.SK_Councilor_2|default:"Vacant" }}
+                                    {% elif i == "3" %}{{ council.SK_Councilor_3|default:"Vacant" }}
+                                    {% elif i == "4" %}{{ council.SK_Councilor_4|default:"Vacant" }}
+                                    {% elif i == "5" %}{{ council.SK_Councilor_5|default:"Vacant" }}
+                                    {% elif i == "6" %}{{ council.SK_Councilor_6|default:"Vacant" }}
+                                    {% elif i == "7" %}{{ council.SK_Councilor_7|default:"Vacant" }}{% endif %}
+                                </h4>
+                                <span class="block text-[9px] font-bold text-slate-400 uppercase tracking-wider mt-1">Kagawad {{ i }}</span>
+                            </a>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mobile Stack Layout (Visible on tiny viewports up to MD breakdown boundary) -->
+            <div class="block md:hidden space-y-4 max-w-md mx-auto">
+                <!-- Mobile Item: Chairperson -->
+                <a href="{% url 'update_position_view' role='chairperson' %}" class="bg-white border-l-4 border-indigo-500 rounded-xl p-4 shadow-sm flex items-center gap-4 active:bg-slate-50 block decoration-none">
+                    <div class="w-12 h-12 rounded-lg overflow-hidden border border-slate-200 bg-slate-50 shrink-0 flex items-center justify-center text-slate-400">
+                        {% if council.SK_Chairperson.sk_picture %}
+                            <img src="{{ council.SK_Chairperson.sk_picture.url }}" class="w-full h-full object-cover" alt="Chairperson">
+                        {% else %}
+                            <i class="fa-solid fa-user text-base"></i>
+                        {% endif %}
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <span class="block text-[9px] font-extrabold text-indigo-600 uppercase tracking-wider">SK Chairperson</span>
+                        <div class="font-bold text-slate-800 text-sm mt-0.5 truncate">{{ council.SK_Chairperson|default:"Vacant Seat" }}</div>
+                    </div>
+                    <i class="fa-solid fa-chevron-right text-slate-300 text-xs ml-auto"></i>
+                </a>
+
+                <!-- Mobile Item: Secretary -->
+                <a href="{% url 'update_position_view' role='secretary' %}" class="bg-white border-l-4 border-slate-400 rounded-xl p-4 shadow-sm flex items-center gap-4 active:bg-slate-50 block decoration-none">
+                    <div class="w-12 h-12 rounded-lg overflow-hidden border border-slate-200 bg-slate-50 shrink-0 flex items-center justify-center text-slate-400">
+                        {% if council.SK_Secretary.sk_picture %}
+                            <img src="{{ council.SK_Secretary.sk_picture.url }}" class="w-full h-full object-cover" alt="Secretary">
+                        {% else %}
+                            <i class="fa-solid fa-user text-base"></i>
+                        {% endif %}
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <span class="block text-[9px] font-bold text-slate-400 uppercase tracking-wider">SK Secretary</span>
+                        <div class="font-semibold text-slate-800 text-sm mt-0.5 truncate">{{ council.SK_Secretary|default:"Vacant" }}</div>
+                    </div>
+                    <i class="fa-solid fa-chevron-right text-slate-300 text-xs ml-auto"></i>
+                </a>
+
+                <!-- Mobile Item: Treasurer -->
+                <a href="{% url 'update_position_view' role='treasurer' %}" class="bg-white border-l-4 border-slate-400 rounded-xl p-4 shadow-sm flex items-center gap-4 active:bg-slate-50 block decoration-none">
+                    <div class="w-12 h-12 rounded-lg overflow-hidden border border-slate-200 bg-slate-50 shrink-0 flex items-center justify-center text-slate-400">
+                        {% if council.SK_Treasurer.sk_picture %}
+                            <img src="{{ council.SK_Treasurer.sk_picture.url }}" class="w-full h-full object-cover" alt="Treasurer">
+                        {% else %}
+                            <i class="fa-solid fa-user text-base"></i>
+                        {% endif %}
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <span class="block text-[9px] font-bold text-slate-400 uppercase tracking-wider">SK Treasurer</span>
+                        <div class="font-semibold text-slate-800 text-sm mt-0.5 truncate">{{ council.SK_Treasurer|default:"Vacant" }}</div>
+                    </div>
+                    <i class="fa-solid fa-chevron-right text-slate-300 text-xs ml-auto"></i>
+                </a>
+
+                <!-- Mobile Cluster Header: Councilors -->
+                <div class="pt-4 pb-1 text-center">
+                    <span class="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest">— SK Council Members —</span>
+                </div>
+
+                <!-- Mobile Matrix Grid for Councilors -->
+                <div class="grid grid-cols-2 gap-3">
+                    {% for i in "1234567" %}
+                    <a href="{% url 'update_position_view' role='kagawad-'|add:i %}" class="bg-white border border-slate-200 rounded-xl p-3 text-center active:bg-slate-50 block decoration-none">
+                        <div class="w-10 h-10 rounded-full overflow-hidden mx-auto mb-2 border border-slate-200 flex items-center justify-center text-slate-400">
+                            {% if i == "1" and council.SK_Councilor_1.sk_picture %}<img src="{{ council.SK_Councilor_1.sk_picture.url }}" class="w-full h-full object-cover" alt="Photo">
+                            {% elif i == "2" and council.SK_Councilor_2.sk_picture %}<img src="{{ council.SK_Councilor_2.sk_picture.url }}" class="w-full h-full object-cover" alt="Photo">
+                            {% elif i == "3" and council.SK_Councilor_3.sk_picture %}<img src="{{ council.SK_Councilor_3.sk_picture.url }}" class="w-full h-full object-cover" alt="Photo">
+                            {% elif i == "4" and council.SK_Councilor_4.sk_picture %}<img src="{{ council.SK_Councilor_4.sk_picture.url }}" class="w-full h-full object-cover" alt="Photo">
+                            {% elif i == "5" and council.SK_Councilor_5.sk_picture %}<img src="{{ council.SK_Councilor_5.sk_picture.url }}" class="w-full h-full object-cover" alt="Photo">
+                            {% elif i == "6" and council.SK_Councilor_6.sk_picture %}<img src="{{ council.SK_Councilor_6.sk_picture.url }}" class="w-full h-full object-cover" alt="Photo">
+                            {% elif i == "7" and council.SK_Councilor_7.sk_picture %}<img src="{{ council.SK_Councilor_7.sk_picture.url }}" class="w-full h-full object-cover" alt="Photo">
+                            {% else %}<i class="fa-solid fa-user text-xs"></i>{% endif %}
+                        </div>
+                        <div class="font-semibold text-slate-700 text-xs truncate">
+                            {% if i == "1" %}{{ council.SK_Councilor_1|default:"Vacant" }}
+                            {% elif i == "2" %}{{ council.SK_Councilor_2|default:"Vacant" }}
+                            {% elif i == "3" %}{{ council.SK_Councilor_3|default:"Vacant" }}
+                            {% elif i == "4" %}{{ council.SK_Councilor_4|default:"Vacant" }}
+                            {% elif i == "5" %}{{ council.SK_Councilor_5|default:"Vacant" }}
+                            {% elif i == "6" %}{{ council.SK_Councilor_6|default:"Vacant" }}
+                            {% elif i == "7" %}{{ council.SK_Councilor_7|default:"Vacant" }}{% endif %}
+                        </div>
+                        <span class="block text-[9px] font-medium text-slate-400 mt-0.5">Kagawad {{ i }}</span>
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+{% endblock %}

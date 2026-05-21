@@ -1,0 +1,136 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KK Profiling Login</title>
+    <!-- Tailwind CSS Play CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="bg-slate-50 min-h-screen flex items-center justify-center p-4 antialiased selection:bg-indigo-500 selection:text-white">
+
+    <!-- Main Container -->
+    <div class="w-full max-w-5xl flex flex-col md:flex-row bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-100">
+        
+        <!-- Left Column: Branding / Info (Hidden on small mobile, beautiful on desktop) -->
+        <div class="md:w-1/2 bg-gradient-to-br from-indigo-600 via-purple-600 to-indigo-800 p-8 md:p-12 flex flex-col justify-between text-white relative overflow-hidden">
+            <!-- Subtle decorative background shapes -->
+            <div class="absolute -top-10 -left-10 w-40 h-40 bg-white/10 rounded-full blur-2xl"></div>
+            <div class="absolute -bottom-20 -right-20 w-60 h-60 bg-purple-500/20 rounded-full blur-3xl"></div>
+
+            <!-- Top Header Logo Section -->
+            <div class="flex items-center gap-3 relative z-10">
+                <div class="w-10 h-10 bg-white/15 backdrop-blur-md rounded-xl flex items-center justify-center border border-white/20">
+                    <img src="{% static 'images/logo.png' %}" alt="SK Logo" class="w-7 h-7 object-contain">
+                </div>
+                <span class="font-semibold tracking-wide uppercase text-sm text-indigo-100">Katipunan ng Kabataan</span>
+            </div>
+
+            <!-- Central Typography -->
+            <div class="my-12 md:my-auto relative z-10 max-w-sm">
+                <h1 class="text-4xl md:text-5xl font-black tracking-tight leading-none mb-4">
+                    KK Profiling <br>
+                    <span class="text-indigo-200 font-medium text-2xl md:text-3xl block mt-2">Management System</span>
+                </h1>
+                <p class="text-indigo-100/80 text-sm leading-relaxed mt-6">
+                    Streamlining youth data management, community profiling, and developmental tracking for a more empowered youth sector.
+                </p>
+            </div>
+
+            <!-- Footer Note -->
+            <div class="text-xs text-indigo-200/60 relative z-10 hidden md:block">
+                &copy; 2026 Sangguniang Kabataan. All rights reserved.
+            </div>
+        </div>
+
+        <!-- Right Column: Login Form -->
+        <div class="md:w-1/2 p-8 md:p-12 flex flex-col justify-center bg-white">
+            <div class="w-full max-w-md mx-auto">
+                
+                <!-- Mobile Logo Header (Only displays when the left panel's text isn't enough context) -->
+                <div class="flex flex-col items-center mb-8 md:hidden text-center">
+                    <img src="images/logo.png" alt="SK Logo" class="w-16 h-16 object-contain mb-3 drop-shadow-sm">
+                    <h2 class="text-2xl font-bold text-slate-800">KK Profiling System</h2>
+                    <p class="text-sm text-slate-500">Sign in to manage your youth roster</p>
+                </div>
+
+                <!-- Desktop Form Header -->
+                <div class="hidden md:block mb-8">
+                    <h2 class="text-2xl font-bold text-slate-800 tracking-tight">Welcome Back</h2>
+                    <p class="text-sm text-slate-500 mt-1">Please enter your credentials to access the system.</p>
+                </div>
+
+                <!-- Form -->
+                <form method="post" action="{% url 'loginn' %}" class="space-y-5">
+                    {% csrf_token %}
+                    
+                    <!-- Username Field -->
+                    <div class="space-y-1.5">
+                        <label for="username" class="text-xs font-semibold text-slate-600 uppercase tracking-wider block">Username</label>
+                        <div class="relative group">
+                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 group-focus-within:text-indigo-500 transition-colors duration-200">
+                                <i class="fa-solid fa-user text-sm"></i>
+                            </div>
+                            <input 
+                                type="text" 
+                                id="username"
+                                name="{{ form.username.name }}" 
+                                placeholder="Enter your username" 
+                                class="w-full pl-10 pr-4 py-3 bg-slate-50/50 border border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10 transition-all duration-200 text-sm"
+                                required
+                            >
+                        </div>
+                    </div>
+
+                    <!-- Password Field -->
+                    <div class="space-y-1.5">
+                        <div class="flex justify-between items-center">
+                            <label for="password" class="text-xs font-semibold text-slate-600 uppercase tracking-wider block">Password</label>
+                            <!-- Optional Link placeholder for UX completeness -->
+                            <a href="#" class="text-xs font-medium text-indigo-600 hover:text-indigo-700 hover:underline transition-colors">Forgot password?</a>
+                        </div>
+                        <div class="relative group">
+                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 group-focus-within:text-indigo-500 transition-colors duration-200">
+                                <i class="fa-solid fa-lock text-sm"></i>
+                            </div>
+                            <input 
+                                type="password" 
+                                id="password"
+                                name="{{ form.password.name }}" 
+                                placeholder="Enter your password" 
+                                class="w-full pl-10 pr-4 py-3 bg-slate-50/50 border border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10 transition-all duration-200 text-sm"
+                                required
+                            >
+                        </div>
+                    </div>
+
+                    <!-- Remember Me Option (Improves UX immensely) -->
+                    <div class="flex items-center">
+                        <input 
+                            type="checkbox" 
+                            id="remember_me" 
+                            name="remember_me" 
+                            class="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 accent-indigo-600"
+                        >
+                        <label for="remember_me" class="ml-2 block text-xs text-slate-600 select-none">
+                            Keep me logged in
+                        </label>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button 
+                        type="submit" 
+                        class="w-full mt-2 py-3 px-4 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white font-medium rounded-xl text-sm shadow-sm hover:shadow transition-all duration-150 focus:outline-none focus:ring-4 focus:ring-indigo-500/30 cursor-pointer"
+                    >
+                        Sign In
+                    </button>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</body>
+</html>

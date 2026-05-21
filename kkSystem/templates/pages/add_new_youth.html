@@ -1,0 +1,247 @@
+{% extends "pages/base.html" %}
+
+{% block title %}Create Youth Profile{% endblock %}
+
+{% block content %}
+<div style="padding: 40px 24px; max-width: 900px; margin: 0 auto; font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+    
+    <!-- Header Area -->
+    <div style="margin-bottom: 32px;">
+        <h2 style="margin: 0 0 6px 0; font-size: 1.85rem; font-weight: 700; color: #1a202c; letter-spacing: -0.5px;">Katipunan ng Kabataan Profiling Form</h2>
+        <p style="margin: 0; color: #718096; font-size: 0.98rem;">Complete all three sections below to create a unified youth registration record.</p>
+    </div>
+
+    <!-- Main Unified Form Document Shell -->
+    <form method="POST" style="display: flex; flex-direction: column; gap: 32px;">
+        {% csrf_token %}
+        
+        <!-- Global Error Callout Banner -->
+        {% if info_form.errors or address_form.errors or status_form.errors %}
+            <div style="background: #fff5f5; border: 1px solid #fed7d7; color: #c53030; padding: 16px; border-radius: 12px; font-size: 0.95rem; font-weight: 500; display: flex; align-items: flex-start; gap: 10px;">
+                <i class="fa-solid fa-triangle-exclamation" style="margin-top: 2px;"></i>
+                <div>
+                    <strong style="display: block; margin-bottom: 4px;">Form validation encountered errors:</strong>
+                    <span style="font-size: 0.88rem; opacity: 0.95;">Please ensure all mandatory registration requirements across sections are completely fulfilled.</span>
+                </div>
+            </div>
+        {% endif %}
+
+        <!-- ======================================================== -->
+        <!-- SECTION 1: PERSONAL INFORMATIONS                         -->
+        <!-- ======================================================== -->
+        <div style="background: #ffffff; padding: 32px; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); border: 1px solid #e2e8f0;">
+            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 24px; border-bottom: 1px solid #edf2f7; padding-bottom: 12px;">
+                <span style="background: #ebf8ff; color: #2b6cb0; width: 32px; height: 32px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.9rem;">1</span>
+                <h3 style="margin: 0; font-size: 1.2rem; font-weight: 700; color: #2d3748;">Personal Identification</h3>
+            </div>
+            
+            <!-- Full Name Block (3-Column Layout) -->
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 20px;">
+                <div style="display: flex; flex-direction: column; gap: 6px;">
+                    <label for="id_first_name" style="font-weight: 600; font-size: 0.88rem; color: #4a5568;">First Name <span style="color: #e53e3e;">*</span></label>
+                    <input type="text" id="id_first_name" name="first_name" value="{{ info_form.first_name.value|default:'' }}" placeholder="e.g. John" style="width: 100%; padding: 11px 14px; border: 1px solid {% if info_form.first_name.errors %}#e53e3e{% else %}#e2e8f0{% endif %}; border-radius: 10px; font-size: 0.95rem; outline: none; box-sizing: border-box;">
+                    {% for error in info_form.first_name.errors %}<span style="color: #e53e3e; font-size: 0.8rem;">{{ error }}</span>{% endfor %}
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 6px;">
+                    <label for="id_middle_name" style="font-weight: 600; font-size: 0.88rem; color: #4a5568;">Middle Name</label>
+                    <input type="text" id="id_middle_name" name="middle_name" value="{{ info_form.middle_name.value|default:'' }}" placeholder="e.g. Smith" style="width: 100%; padding: 11px 14px; border: 1px solid #e2e8f0; border-radius: 10px; font-size: 0.95rem; outline: none; box-sizing: border-box;">
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 6px;">
+                    <label for="id_last_name" style="font-weight: 600; font-size: 0.88rem; color: #4a5568;">Last Name <span style="color: #e53e3e;">*</span></label>
+                    <input type="text" id="id_last_name" name="last_name" value="{{ info_form.last_name.value|default:'' }}" placeholder="e.g. Doe" style="width: 100%; padding: 11px 14px; border: 1px solid {% if info_form.last_name.errors %}#e53e3e{% else %}#e2e8f0{% endif %}; border-radius: 10px; font-size: 0.95rem; outline: none; box-sizing: border-box;">
+                    {% for error in info_form.last_name.errors %}<span style="color: #e53e3e; font-size: 0.8rem;">{{ error }}</span>{% endfor %}
+                </div>
+            </div>
+
+            <!-- Birthdate, Age, Sex, Civil Status (4-Column Layout) -->
+            <div style="display: grid; grid-template-columns: 2fr 1fr 1.5fr 1.5fr; gap: 16px; margin-bottom: 20px;">
+                <div style="display: flex; flex-direction: column; gap: 6px;">
+                    <label for="id_birthdate" style="font-weight: 600; font-size: 0.88rem; color: #4a5568;">Birthdate <span style="color: #e53e3e;">*</span></label>
+                    <input type="date" id="id_birthdate" name="birthdate" value="{{ info_form.birthdate.value|stringformat:'Y-m-d'|default:'' }}" style="width: 100%; padding: 11px 14px; border: 1px solid {% if info_form.birthdate.errors %}#e53e3e{% else %}#e2e8f0{% endif %}; border-radius: 10px; font-size: 0.95rem; outline: none; box-sizing: border-box;">
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 6px;">
+                    <label for="id_age" style="font-weight: 600; font-size: 0.88rem; color: #4a5568;">Age <span style="color: #e53e3e;">*</span></label>
+                    <input type="number" id="id_age" name="age" value="{{ info_form.age.value|default:'' }}" min="0" style="width: 100%; padding: 11px 14px; border: 1px solid {% if info_form.age.errors %}#e53e3e{% else %}#e2e8f0{% endif %}; border-radius: 10px; font-size: 0.95rem; outline: none; box-sizing: border-box;">
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 6px;">
+                    <label for="id_sex" style="font-weight: 600; font-size: 0.88rem; color: #4a5568;">Sex <span style="color: #e53e3e;">*</span></label>
+                    <select id="id_sex" name="sex" style="width: 100%; padding: 11px 14px; border: 1px solid #e2e8f0; border-radius: 10px; font-size: 0.95rem; background-color: #ffffff; outline: none;">
+                        {% for value, text in info_form.fields.sex.choices %}
+                            <option value="{{ value }}" {% if info_form.sex.value|stringformat:"s" == value|stringformat:"s" %}selected{% endif %}>{{ text }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 6px;">
+                    <label for="id_civil_status" style="font-weight: 600; font-size: 0.88rem; color: #4a5568;">Civil Status <span style="color: #e53e3e;">*</span></label>
+                    <select id="id_civil_status" name="civil_status" style="width: 100%; padding: 11px 14px; border: 1px solid #e2e8f0; border-radius: 10px; font-size: 0.95rem; background-color: #ffffff; outline: none;">
+                        {% for value, text in info_form.fields.civil_status.choices %}
+                            <option value="{{ value }}" {% if info_form.civil_status.value|stringformat:"s" == value|stringformat:"s" %}selected{% endif %}>{{ text }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <!-- Contact, Email, Education (Grid) -->
+            <div style="display: grid; grid-template-columns: 1.2fr 1.8fr 2fr; gap: 16px;">
+                <div style="display: flex; flex-direction: column; gap: 6px;">
+                    <label for="id_contact_number" style="font-weight: 600; font-size: 0.88rem; color: #4a5568;">Contact Number</label>
+                    <input type="text" id="id_contact_number" name="contact_number" value="{{ info_form.contact_number.value|default:'' }}" placeholder="e.g. 09123456789" style="width: 100%; padding: 11px 14px; border: 1px solid #e2e8f0; border-radius: 10px; font-size: 0.95rem; outline: none; box-sizing: border-box;">
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 6px;">
+                    <label for="id_email" style="font-weight: 600; font-size: 0.88rem; color: #4a5568;">Email Address <span style="color: #e53e3e;">*</span></label>
+                    <input type="email" id="id_email" name="email" value="{{ info_form.email.value|default:'' }}" placeholder="john.doe@example.com" style="width: 100%; padding: 11px 14px; border: 1px solid {% if info_form.email.errors %}#e53e3e{% else %}#e2e8f0{% endif %}; border-radius: 10px; font-size: 0.95rem; outline: none; box-sizing: border-box;">
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 6px;">
+                    <label for="id_educational_background" style="font-weight: 600; font-size: 0.88rem; color: #4a5568;">Educational Background <span style="color: #e53e3e;">*</span></label>
+                    <select id="id_educational_background" name="educational_background" style="width: 100%; padding: 11px 14px; border: 1px solid #e2e8f0; border-radius: 10px; font-size: 0.95rem; background-color: #ffffff; outline: none;">
+                        {% for value, text in info_form.fields.educational_background.choices %}
+                            <option value="{{ value }}" {% if info_form.educational_background.value|stringformat:"s" == value|stringformat:"s" %}selected{% endif %}>{{ text }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- ======================================================== -->
+        <!-- SECTION 2: KK ADDRESS RESIDENCY                           -->
+        <!-- ======================================================== -->
+        <div style="background: #ffffff; padding: 32px; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); border: 1px solid #e2e8f0;">
+            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 24px; border-bottom: 1px solid #edf2f7; padding-bottom: 12px;">
+                <span style="background: #e6fffa; color: #319795; width: 32px; height: 32px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.9rem;">2</span>
+                <h3 style="margin: 0; font-size: 1.2rem; font-weight: 700; color: #2d3748;">Local Residency Location</h3>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 20px;">
+                <div style="display: flex; flex-direction: column; gap: 6px;">
+                    <label for="id_region" style="font-weight: 600; font-size: 0.88rem; color: #4a5568;">Region <span style="color: #e53e3e;">*</span></label>
+                    <input type="text" id="id_region" name="region" value="{{ address_form.region.value|default:'' }}" placeholder="e.g. Region VIII" style="width: 100%; padding: 11px 14px; border: 1px solid #e2e8f0; border-radius: 10px; font-size: 0.95rem; outline: none; box-sizing: border-box;">
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 6px;">
+                    <label for="id_province" style="font-weight: 600; font-size: 0.88rem; color: #4a5568;">Province <span style="color: #e53e3e;">*</span></label>
+                    <input type="text" id="id_province" name="province" value="{{ address_form.province.value|default:'' }}" placeholder="e.g. Leyte" style="width: 100%; padding: 11px 14px; border: 1px solid #e2e8f0; border-radius: 10px; font-size: 0.95rem; outline: none; box-sizing: border-box;">
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 6px;">
+                    <label for="id_municipality_or_city" style="font-weight: 600; font-size: 0.88rem; color: #4a5568;">Municipality / City <span style="color: #e53e3e;">*</span></label>
+                    <input type="text" id="id_municipality_or_city" name="municipality_or_city" value="{{ address_form.municipality_or_city.value|default:'' }}" placeholder="e.g. Barugo" style="width: 100%; padding: 11px 14px; border: 1px solid #e2e8f0; border-radius: 10px; font-size: 0.95rem; outline: none; box-sizing: border-box;">
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                <div style="display: flex; flex-direction: column; gap: 6px;">
+                    <label for="id_barangay" style="font-weight: 600; font-size: 0.88rem; color: #4a5568;">Barangay <span style="color: #e53e3e;">*</span></label>
+                    <input type="text" id="id_barangay" name="barangay" value="{{ address_form.barangay.value|default:'' }}" placeholder="e.g. Poblacion" style="width: 100%; padding: 11px 14px; border: 1px solid #e2e8f0; border-radius: 10px; font-size: 0.95rem; outline: none; box-sizing: border-box;">
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 6px;">
+                    <label for="id_purok" style="font-weight: 600; font-size: 0.88rem; color: #4a5568;">Purok Zone <span style="color: #e53e3e;">*</span></label>
+                    <input type="text" id="id_purok" name="purok" value="{{ address_form.purok.value|default:'' }}" placeholder="e.g. Purok 1" style="width: 100%; padding: 11px 14px; border: 1px solid #e2e8f0; border-radius: 10px; font-size: 0.95rem; outline: none; box-sizing: border-box;">
+                </div>
+            </div>
+        </div>
+
+        <!-- ======================================================== -->
+        <!-- SECTION 3: YOUTH STATUS DATA                             -->
+        <!-- ======================================================== -->
+        <div style="background: #ffffff; padding: 32px; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); border: 1px solid #e2e8f0;">
+            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 24px; border-bottom: 1px solid #edf2f7; padding-bottom: 12px;">
+                <span style="background: #faf5ff; color: #805ad5; width: 32px; height: 32px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.9rem;">3</span>
+                <h3 style="margin: 0; font-size: 1.2rem; font-weight: 700; color: #2d3748;">Youth Registry Demographics</h3>
+            </div>
+
+            <!-- Choices Grid Layout -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 28px;">
+                <div style="display: flex; flex-direction: column; gap: 6px;">
+                    <label for="id_youth_classification" style="font-weight: 600; font-size: 0.88rem; color: #4a5568;">Youth Classification</label>
+                    <select id="id_youth_classification" name="youth_classification" style="width: 100%; padding: 11px 14px; border: 1px solid #e2e8f0; border-radius: 10px; font-size: 0.95rem; background-color: #ffffff; outline: none;">
+                        {% for value, text in status_form.fields.youth_classification.choices %}
+                            <option value="{{ value }}" {% if status_form.youth_classification.value|stringformat:"s" == value|stringformat:"s" %}selected{% endif %}>{{ text }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 6px;">
+                    <label for="id_youth_age_group" style="font-weight: 600; font-size: 0.88rem; color: #4a5568;">Age Bracket Classification</label>
+                    <select id="id_youth_age_group" name="youth_age_group" style="width: 100%; padding: 11px 14px; border: 1px solid #e2e8f0; border-radius: 10px; font-size: 0.95rem; background-color: #ffffff; outline: none;">
+                        {% for value, text in status_form.fields.youth_age_group.choices %}
+                            <option value="{{ value }}" {% if status_form.youth_age_group.value|stringformat:"s" == value|stringformat:"s" %}selected{% endif %}>{{ text }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 6px;">
+                    <label for="id_youth_with_specific_needs" style="font-weight: 600; font-size: 0.88rem; color: #4a5568;">Specific Needs Identification</label>
+                    <select id="id_youth_with_specific_needs" name="youth_with_specific_needs" style="width: 100%; padding: 11px 14px; border: 1px solid #e2e8f0; border-radius: 10px; font-size: 0.95rem; background-color: #ffffff; outline: none;">
+                        {% for value, text in status_form.fields.youth_with_specific_needs.choices %}
+                            <option value="{{ value }}" {% if status_form.youth_with_specific_needs.value|stringformat:"s" == value|stringformat:"s" %}selected{% endif %}>{{ text }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 6px;">
+                    <label for="id_working_status" style="font-weight: 600; font-size: 0.88rem; color: #4a5568;">Work Status Category</label>
+                    <select id="id_working_status" name="working_status" style="width: 100%; padding: 11px 14px; border: 1px solid #e2e8f0; border-radius: 10px; font-size: 0.95rem; background-color: #ffffff; outline: none;">
+                        {% for value, text in status_form.fields.working_status.choices %}
+                            <option value="{{ value }}" {% if status_form.working_status.value|stringformat:"s" == value|stringformat:"s" %}selected{% endif %}>{{ text }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <!-- Registration Context Checklist Toggles -->
+            <div style="display: flex; flex-direction: column; gap: 14px; margin-bottom: 28px;">
+                <label style="display: flex; align-items: center; gap: 12px; cursor: pointer; background: #f8fafc; padding: 14px; border-radius: 10px; border: 1px solid #e2e8f0;">
+                    <input type="checkbox" id="id_is_sk_voter" name="is_sk_voter" {% if status_form.is_sk_voter.value %}checked{% endif %} style="width: 18px; height: 18px; accent-color: #3182ce;">
+                    <div>
+                        <div style="font-weight: 600; font-size: 0.92rem; color: #2d3748;">Registered Katipunan ng Kabataan (SK) Voter</div>
+                    </div>
+                </label>
+
+                <label style="display: flex; align-items: center; gap: 12px; cursor: pointer; background: #f8fafc; padding: 14px; border-radius: 10px; border: 1px solid #e2e8f0;">
+                    <input type="checkbox" id="id_is_regular_voter" name="is_regular_voter" {% if status_form.is_regular_voter.value %}checked{% endif %} style="width: 18px; height: 18px; accent-color: #3182ce;">
+                    <div>
+                        <div style="font-weight: 600; font-size: 0.92rem; color: #2d3748;">Registered National / General Voter</div>
+                    </div>
+                </label>
+
+                <label style="display: flex; align-items: center; gap: 12px; cursor: pointer; background: #f8fafc; padding: 14px; border-radius: 10px; border: 1px solid #e2e8f0;">
+                    <input type="checkbox" id="id_attended_kk_assembly" name="attended_kk_assembly" {% if status_form.attended_kk_assembly.value %}checked{% endif %} style="width: 18px; height: 18px; accent-color: #3182ce;">
+                    <div>
+                        <div style="font-weight: 600; font-size: 0.92rem; color: #2d3748;">Has Participated in General KK Assemblies</div>
+                    </div>
+                </label>
+            </div>
+
+            <!-- Assembly Logging Context Area -->
+            <div style="background: #fffaf0; padding: 24px; border-radius: 12px; border: 1px solid #feebc8; display: grid; grid-template-columns: 1fr 2fr; gap: 20px;">
+                <div style="display: flex; flex-direction: column; gap: 6px;">
+                    <label for="id_times_attended" style="font-weight: 600; font-size: 0.88rem; color: #4a5568;">Assembly Attendance Count</label>
+                    <input type="number" id="id_times_attended" name="times_attended" value="{{ status_form.times_attended.value|default:0 }}" min="0" style="width: 100%; padding: 11px 14px; border: 1px solid #e2e8f0; border-radius: 10px; font-size: 0.95rem; outline: none; box-sizing: border-box; background: white;">
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 6px;">
+                    <label for="id_did_not_attend_reason" style="font-weight: 600; font-size: 0.88rem; color: #4a5568;">Reason for Absence (If applicable)</label>
+                    <textarea id="id_did_not_attend_reason" name="did_not_attend_reason" rows="2" placeholder="Details if assembly participation records are zero..." style="width: 100%; padding: 11px 14px; border: 1px solid #e2e8f0; border-radius: 10px; font-size: 0.95rem; outline: none; box-sizing: border-box; font-family: inherit; resize: vertical; background: white;">{{ status_form.did_not_attend_reason.value|default:'' }}</textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- Global Submission Bar -->
+        <div style="display: flex; justify-content: flex-end; gap: 16px; margin-top: 8px;">
+            <button type="button" onclick="window.history.back()" style="padding: 12px 28px; border-radius: 10px; background: white; border: 1px solid #e2e8f0; color: #4a5568; font-weight: 600; font-size: 0.98rem; cursor: pointer;">Cancel</button>
+            <form method="post" action="{% url 'add_youth' %}"> 
+                {% csrf_token %}
+                <button type="submit" style="padding: 12px 36px; border-radius: 10px; background: #3182ce; color: white; border: none; font-weight: 600; font-size: 0.98rem; cursor: pointer; box-shadow: 0 4px 6px -1px rgba(49,130,206,0.3);">Save Profiling Record</button>
+            </form>
+        </div>
+    </form>
+</div>
+
+<script>
+    /* Attach interactive focus behaviors to every custom manual input item dynamically */
+    document.querySelectorAll('form input[type="text"], form input[type="email"], form input[type="number"], form input[type="date"], form select, form textarea').forEach(el => {
+        el.addEventListener('focus', () => {
+            el.style.borderColor = '#3182ce';
+            el.style.boxShadow = '0 0 0 3px rgba(66, 153, 225, 0.15)';
+        });
+        el.addEventListener('blur', () => {
+            el.style.borderColor = '#e2e8f0';
+            el.style.boxShadow = 'none';
+        });
+    });
+</script>
+{% endblock %}

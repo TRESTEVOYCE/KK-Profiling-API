@@ -1,0 +1,227 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-slate-50 dark:bg-slate-900 transition-colors duration-200">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}KK System{% endblock %}</title>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Tailwind CSS Script CDN (v4 Browser Compiler) -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    
+    <!-- Early inline script execution engine to avoid bright flashing sequences on load -->
+    <script>
+        if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    </script>
+</head>
+<body class="h-full flex flex-col font-sans text-slate-800 dark:text-slate-200 antialiased selection:bg-indigo-500 selection:text-white transition-colors duration-200">
+
+    <!-- Sticky Navigation Header -->
+    <header class="sticky top-0 z-40 w-full bg-white/90 dark:bg-slate-800/90 border-b border-slate-200 dark:border-slate-700 shadow-xs backdrop-blur-md transition-colors duration-200">
+        <div class="px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            
+            <!-- Header Left: Hamburger Trigger, Logo & Identity -->
+            <div class="flex items-center gap-2 sm:gap-3">
+                <!-- Mobile Hamburger Button -->
+                <button 
+                    id="menuToggleBtn"
+                    type="button"
+                    class="md:hidden p-2 rounded-xl text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-700 focus:outline-hidden transition-colors cursor-pointer mr-1"
+                    aria-label="Toggle navigation menu"
+                    aria-expanded="false"
+                >
+                    <i id="menuToggleIcon" class="fa-solid fa-bars text-lg w-5 h-5 flex items-center justify-center"></i>
+                </button>
+
+                <!-- System Logo -->
+                <div class="w-9 h-9 bg-slate-100 dark:bg-slate-700 rounded-lg flex items-center justify-center p-1.5 border border-slate-200 dark:border-slate-600 transition-colors">
+                    <img src="{% static 'images/logo.png' %}" alt="KK Logo" class="w-full h-full object-contain">
+                </div>
+                
+                <!-- System Title Layout -->
+                <h1 class="text-sm sm:text-base font-bold text-slate-900 dark:text-slate-100 tracking-tight transition-colors">
+                    KK Profiling Management System
+                </h1>
+            </div>
+            
+            <!-- Header Right: Session Actions -->
+            <div>
+                <button 
+                    id="openModal"
+                    class="inline-flex items-center gap-2 px-3.5 py-2 text-sm font-medium text-rose-600 dark:text-rose-400 hover:text-rose-700 dark:hover:text-rose-300 bg-rose-50 dark:bg-rose-950/30 hover:bg-rose-100 dark:hover:bg-rose-950/60 active:bg-rose-200/70 border border-rose-100 dark:border-rose-900/50 rounded-xl transition-all duration-150 cursor-pointer focus:outline-hidden focus:ring-4 focus:ring-rose-500/15"
+                >
+                    <i class="fa-solid fa-right-from-bracket text-xs"></i> 
+                    <span class="hidden sm:inline">Log Out</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Workspace Sidebar Wrapper -->
+    <div class="flex flex-1 overflow-hidden relative">
+        
+        <!-- Sidebar Navigation (Desktop: Sidebar Panel | Mobile: Slide-out drawer overlay) -->
+        <nav 
+            id="sidebarNav"
+            class="fixed md:sticky top-16 md:top-0 left-0 bottom-0 z-30 w-64 bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 p-4 space-y-1 overflow-y-auto transform -translate-x-full md:translate-x-0 transition-all duration-300 ease-in-out shadow-xl md:shadow-none"
+        >
+            <!-- Dashboard Link -->
+            <a href="{% url 'home' %}" 
+            class="group flex items-center gap-3 px-4 py-3 text-sm rounded-xl transform transition-all duration-200 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:scale-[1.02] active:scale-[0.98]
+                    {% if request.path == '/home/' or request.path == '/' %} text-indigo-600 dark:text-indigo-400 bg-indigo-50/70 dark:bg-indigo-950/30 font-semibold shadow-xs {% else %} text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-700/50 font-medium {% endif %}">
+                <i class="fa-solid fa-house text-base w-5 text-center transition-transform duration-200 group-hover:scale-110 {% if request.path == '/home/' or request.path == '/' %} text-indigo-600 dark:text-indigo-400 {% else %} text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300 {% endif %}"></i> 
+                <span class="transition-transform duration-200 group-hover:translate-x-0.5">Dashboard</span>
+            </a>
+
+            <!-- Youth Profiles Link -->
+            <a href="{% url 'youth-profile' %}" 
+            class="group flex items-center gap-3 px-4 py-3 text-sm rounded-xl transform transition-all duration-200 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:scale-[1.02] active:scale-[0.98]
+                    {% if '/youth-profile/' in request.path %} text-indigo-600 dark:text-indigo-400 bg-indigo-50/70 dark:bg-indigo-950/30 font-semibold shadow-xs {% else %} text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-700/50 font-medium {% endif %}">
+                <i class="fa-solid fa-users text-base w-5 text-center transition-transform duration-200 group-hover:scale-110 {% if '/youth-profile/' in request.path %} text-indigo-600 dark:text-indigo-400 {% else %} text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300 {% endif %}"></i> 
+                <span class="transition-transform duration-200 group-hover:translate-x-0.5">Youth Profiles</span>
+            </a>
+
+            <!-- Events Link -->
+            <a href="{% url 'events' %}" 
+            class="group flex items-center gap-3 px-4 py-3 text-sm rounded-xl transform transition-all duration-200 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:scale-[1.02] active:scale-[0.98]
+                    {% if '/events/' in request.path %} text-indigo-600 dark:text-indigo-400 bg-indigo-50/70 dark:bg-indigo-950/30 font-semibold shadow-xs {% else %} text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-700/50 font-medium {% endif %}">
+                <i class="fa-solid fa-calendar-days text-base w-5 text-center transition-transform duration-200 group-hover:scale-110 {% if '/events/' in request.path %} text-indigo-600 dark:text-indigo-400 {% else %} text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300 {% endif %}"></i> 
+                <span class="transition-transform duration-200 group-hover:translate-x-0.5">Events</span>
+            </a>
+
+            <!-- Settings Link -->
+            <a href="{% url 'settings' %}" 
+            class="group flex items-center gap-3 px-4 py-3 text-sm rounded-xl transform transition-all duration-200 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:scale-[1.02] active:scale-[0.98]
+                    {% if '/settings/' in request.path %} text-indigo-600 dark:text-indigo-400 bg-indigo-50/70 dark:bg-indigo-950/30 font-semibold shadow-xs {% else %} text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-700/50 font-medium {% endif %}">
+                <i class="fa-solid fa-gear text-base w-5 text-center transition-transform duration-200 group-hover:scale-110 {% if '/settings/' in request.path %} text-indigo-600 dark:text-indigo-400 {% else %} text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300 {% endif %}"></i> 
+                <span class="transition-transform duration-200 group-hover:translate-x-0.5">Settings</span>
+            </a>
+
+            <!-- Organization Link -->
+            <a href="{% url 'organization' %}" 
+            class="group flex items-center gap-3 px-4 py-3 text-sm rounded-xl transform transition-all duration-200 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:scale-[1.02] active:scale-[0.98]
+                    {% if '/organization/' in request.path %} text-indigo-600 dark:text-indigo-400 bg-indigo-50/70 dark:bg-indigo-950/30 font-semibold shadow-xs {% else %} text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-700/50 font-medium {% endif %}">
+                <i class="fa-solid fa-sitemap text-base w-5 text-center transition-transform duration-200 group-hover:scale-110 {% if '/organization/' in request.path %} text-indigo-600 dark:text-indigo-400 {% else %} text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300 {% endif %}"></i> 
+                <span class="transition-transform duration-200 group-hover:translate-x-0.5">Organization</span>
+            </a>
+        </nav>
+
+        <!-- Mobile Drawer Backdrop Mask -->
+        <div 
+            id="mobileNavBackdrop" 
+            class="fixed inset-0 top-16 bg-slate-900/20 dark:bg-slate-950/40 backdrop-blur-xs z-20 hidden md:hidden transition-opacity duration-200"
+        ></div>
+
+        <!-- Injectable Main Workspace Area -->
+        <main class="flex-1 overflow-y-auto bg-slate-50/50 dark:bg-slate-900/40 p-4 sm:p-6 lg:p-8 flex flex-col justify-between z-10 transition-colors duration-200">
+            
+            <!-- Dynamic Subview Content Injection Point -->
+            <div class="w-full h-full">
+                {% block content %}
+                <!-- Child templates inject analytics tables/charts components here -->
+                {% endblock %}
+            </div>
+
+        </main>
+    </div>
+
+    <!-- Hidden Accessible Logout Modal Component -->
+    <div 
+        id="logoutModal" 
+        class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 dark:bg-slate-950/60 backdrop-blur-xs invisible opacity-0 transition-all duration-200 ease-out"
+        role="dialog" 
+        aria-modal="true"
+    >
+        <div 
+            id="modalCard"
+            class="w-full max-w-md transform scale-95 opacity-0 bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-100 dark:border-slate-700 p-6 transition-all duration-200 ease-out"
+        >
+            <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-rose-50 dark:bg-rose-950/30 mb-4 border border-rose-100 dark:border-rose-900/40">
+                <i class="fa-solid fa-triangle-exclamation text-rose-600 dark:text-rose-400 text-lg"></i>
+            </div>
+            <div class="text-center">
+                <h3 class="text-lg font-bold text-slate-900 dark:text-slate-100">Confirm Logout</h3>
+                <p class="text-sm text-slate-500 dark:text-slate-400 mt-2">
+                    Are you sure you want to log out? You will need to re-authenticate to view or update profiling information.
+                </p>
+            </div>
+            <div class="flex flex-col-reverse sm:flex-row gap-2 mt-6 sm:justify-end">
+                <button id="cancelBtn" type="button" class="w-full sm:w-auto px-4 py-2.5 text-sm font-semibold text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700 active:bg-slate-100 dark:active:bg-slate-600 cursor-pointer transition-colors focus:outline-hidden">
+                    Cancel
+                </button>
+                <form action="{% url 'logoutt' %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="w-full sm:w-auto text-center px-4 py-2.5 text-sm font-semibold text-white bg-rose-600 rounded-xl hover:bg-rose-700 active:bg-rose-800 shadow-sm cursor-pointer transition-colors focus:outline-hidden">
+                        Yes, Log Out
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- UI/UX Dynamic Core Interaction Controller Script -->
+    <script>
+        // DOM Selectors Setup Layout
+        const openModalBtn = document.getElementById('openModal');
+        const logoutModal = document.getElementById('logoutModal');
+        const modalCard = document.getElementById('modalCard');
+        const cancelBtn = document.getElementById('cancelBtn');
+
+        const menuToggleBtn = document.getElementById('menuToggleBtn');
+        const menuToggleIcon = document.getElementById('menuToggleIcon');
+        const sidebarNav = document.getElementById('sidebarNav');
+        const mobileNavBackdrop = document.getElementById('mobileNavBackdrop');
+
+        // Logout Confirmation Overlay Dialog Functionality
+        function toggleModal(show) {
+            if (show) {
+                logoutModal.classList.remove('invisible', 'opacity-0');
+                logoutModal.classList.add('visible', 'opacity-100');
+                modalCard.classList.remove('scale-95', 'opacity-0');
+                modalCard.classList.add('scale-100', 'opacity-100');
+                document.body.style.overflow = 'hidden';
+            } else {
+                logoutModal.classList.remove('visible', 'opacity-100');
+                logoutModal.classList.add('invisible', 'opacity-0');
+                modalCard.classList.remove('scale-100', 'opacity-100');
+                modalCard.classList.add('scale-95', 'opacity-0');
+                document.body.style.overflow = '';
+            }
+        }
+
+        // Mobile Responsive Navigation Sidebar Drawer Functionality
+        function toggleMobileMenu(show) {
+            const isOpened = show !== undefined ? show : menuToggleBtn.getAttribute('aria-expanded') === 'true';
+            
+            if (isOpened) {
+                // Close Drawer View Engine
+                menuToggleBtn.setAttribute('aria-expanded', 'false');
+                sidebarNav.classList.add('-translate-x-full');
+                mobileNavBackdrop.classList.add('hidden');
+                menuToggleIcon.classList.remove('fa-xmark');
+                menuToggleIcon.classList.add('fa-bars');
+            } else {
+                // Open Drawer View Engine
+                menuToggleBtn.setAttribute('aria-expanded', 'true');
+                sidebarNav.classList.remove('-translate-x-full');
+                mobileNavBackdrop.classList.remove('hidden');
+                menuToggleIcon.classList.remove('fa-bars');
+                menuToggleIcon.classList.add('fa-xmark');
+            }
+        }
+
+        // Click Event Bindings Listeners Assignments Mapping
+        menuToggleBtn.addEventListener('click', () => toggleMobileMenu());
+        mobileNavBackdrop.addEventListener('click', () => toggleMobileMenu(true));
+
+        openModalBtn.addEventListener('click', () => toggleModal(true));
+        cancelBtn.addEventListener('click', () => toggleModal(false));
+        logoutModal.addEventListener('click', (e) => { if (e.target === logoutModal) toggleModal(false); });
+    </script>
+</body>
+</html>

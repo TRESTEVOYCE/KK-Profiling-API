@@ -4,8 +4,10 @@ from rest_framework_simplejwt.views import (
     TokenRefreshView,
     TokenObtainPairView,
 )
+ 
 
 urlpatterns = [
+    path ('', include('kkSystem.urls')),
     path('admin/', admin.site.urls),
     path('api/', include('user_api.urls')),
     path('api/', include('sk_members_api.urls')),

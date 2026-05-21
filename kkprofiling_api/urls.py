@@ -9,7 +9,3 @@ urlpatterns = [
     path('youth-status/', YouthStatusViewSet.as_view(), name='youth-status-list-create'),
     path('youth-status/<int:pk>/', YouthStatusDetailViewSet.as_view(), name='youth-status-retrieve-update-destroy'),
 ]
-
-
-
-
